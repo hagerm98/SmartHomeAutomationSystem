@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+
+option java_multiple_files = true;
+option java_package = "smarthome.generated.security";
+option java_outer_classname = "SecurityServiceImpl";
+
+package SecurityService;
+
+message OperationResponse {
+  string operationName = 1;
+  bool isSuccessful = 2;
+}
+
+// ---------------------
+
+// Security Service
+
+service SecurityService {
+  rpc lockDoor(LockDoorRequest) returns (OperationResponse) {}
+  rpc unlockDoor(UnlockDoorRequest) returns (OperationResponse) {}
+  rpc registerSecurityDevice(SecurityDevice) returns (OperationResponse) {}
+  rpc deregisterSecurityDevice(SecurityDevice) returns (OperationResponse) {}
+  rpc monitorEvents(stream SecurityEvent) returns (stream SecurityEventAction) {}
+}
+
+message LockDoorRequest {
+  int32 doorNumber = 1;
+}
+
+message UnlockDoorRequest {
+  int32 doorNumber = 1;
+}
+
+enum SecurityDeviceType {
+  CAMERA = 0;
+  ALARM = 1;
+  DOOR = 2;
+  MOTION_ACTION_DETECTOR = 3;
+  BREAK_IN_DETECTOR = 4;
+}
+
+message SecurityDevice {
+  int32 roomNumber = 1;
+  int32 deviceNumber = 2;
+  SecurityDeviceType deviceType = 3;
+}
+
+enum SecurityEventType {
+  NO_EVENT = 0;
+  FIRE_DETECTED = 1;
+  BREAK_IN_DETECTED = 2;
+  OUTDOOR_MOTION_DETECTED = 3;
+  DOORBELL_RING = 4;
+}
+
+message SecurityEvent {
+  int32 deviceNumber = 1;
+  SecurityDeviceType deviceType = 2;
+  uint64 timestamp = 3;
+}
+
+message SecurityEventAction {
+  uint64 timestamp = 1;
+
+  enum SecurityAction {
+    NO_ACTION = 0;
+    ACTIVATE_ALARM = 1;
+    NOTIFY_USER = 2;
+    UNLOCK_DOOR = 3;
+    LOCK_DOOR = 4;
+  }
+  SecurityAction action = 2;
+}

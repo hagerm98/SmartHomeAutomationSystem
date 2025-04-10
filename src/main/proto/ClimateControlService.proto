@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "smarthome.generated.climate";
+option java_outer_classname = "ClimateServiceImpl";
+
+package ClimateService;
+
+message Empty {}
+
+// Enums
+enum DeviceState {
+  OFF = 0;
+  ON = 1;
+}
+
+message OperationResponse {
+  string operationName = 1;
+  bool isSuccessful = 2;
+}
+
+// -------------------
+
+// Climate Control Service
+
+service ClimateControlService {
+  rpc setTargetClimateSettings(TargetClimateSetting) returns (OperationResponse) {}
+  rpc respondToHumidityReading(stream HumidityChangeEvent) returns (Empty) {}
+  rpc respondToTemperatureReading(stream TemperatureChangeEvent) returns (Empty) {}
+  rpc setHeatingState(HeatingStateRequest) returns (OperationResponse) {}
+  rpc setACState(ACStateRequest) returns (OperationResponse) {}
+  rpc setHumidifierDehumidifierState(HumidifierDehumidifierStateRequest) returns (OperationResponse) {}
+}
+
+message TargetClimateSetting {
+  int32 roomNumber = 1;
+  int32 targetTemperature = 2;
+  int32 targetHumidity = 3;
+}
+
+message HumidityChangeEvent {
+  int32 roomNumber = 1;
+  int32 humidity = 2;
+}
+
+message TemperatureChangeEvent {
+  int32 roomNumber = 1;
+  int32 temperature = 2;
+}
+
+message HeatingStateRequest {
+  int32 roomNumber = 1;
+  DeviceState heatingState = 2;
+}
+
+message ACStateRequest {
+  int32 roomNumber = 1;
+  DeviceState acState = 2;
+}
+
+enum HumidifierDehumidifierState {
+  HUMIDIFIER = 0;
+  DEHUMIDIFIER = 1;
+  HUMIDIFIER_DEHUMIDIFIER_OFF = 2;
+}
+
+message HumidifierDehumidifierStateRequest {
+  int32 roomNumber = 1;
+  HumidifierDehumidifierState state = 2;
+}

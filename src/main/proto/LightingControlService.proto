@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "smarthome.generated.lighting";
+option java_outer_classname = "LightingServiceImpl";
+
+package LightingService;
+
+message Empty {}
+
+// Enums
+enum DeviceState {
+  OFF = 0;
+  ON = 1;
+}
+
+message OperationResponse {
+  string operationName = 1;
+  bool isSuccessful = 2;
+}
+
+// -------------
+
+// Lighting Control Service
+
+service LightingControlService {
+  rpc setLightingSchedule(LightingScheduleRequest) returns (OperationResponse) {}
+  rpc setLightingState(LightingStateRequest) returns (OperationResponse) {}
+  rpc setLightingBrightness(LightingBrightnessRequest) returns (OperationResponse) {}
+  rpc respondToMotionDetection(stream MotionDetectedEvent) returns (Empty) {}
+  rpc registerLightingDevice(LightingDevice) returns (OperationResponse) {}
+  rpc deregisterLightingDevice(LightingDevice) returns (OperationResponse) {}
+}
+
+message LightingScheduleRequest {
+  int32 roomNumber = 1;
+  DeviceState lightingState = 2;
+  float brightness = 3;
+  int32 startHour = 4;
+  int32 endHour = 5;
+}
+
+message LightingStateRequest {
+  int32 deviceNumber = 1;
+  DeviceState lightingState = 2;
+}
+
+message LightingBrightnessRequest {
+  int32 deviceNumber = 1;
+  float brightness = 2;
+}
+
+message MotionDetectedEvent {
+  int32 roomNumber = 1;
+}
+
+message LightingDevice {
+  int32 roomNumber = 1;
+  int32 deviceNumber = 2;
+}
