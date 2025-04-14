@@ -51,7 +51,7 @@ message LightingDevice {
 }
 
 message LightingDeviceDetails {
-  int32 deviceNumber = 1;
+  LightingDevice lightingDevice = 1;
   DeviceState lightingDeviceState = 2;
   float brightness = 3;
 }
