@@ -6,8 +6,6 @@ option java_outer_classname = "LightingServiceImpl";
 
 package LightingService;
 
-message Empty {}
-
 // Enums
 enum DeviceState {
   OFF = 0;
@@ -17,27 +15,19 @@ enum DeviceState {
 message OperationResponse {
   string operationName = 1;
   bool isSuccessful = 2;
+  string message = 3;
 }
 
 // -------------
 
 // Lighting Control Service
-
 service LightingControlService {
-  rpc setLightingSchedule(LightingScheduleRequest) returns (OperationResponse) {}
-  rpc setLightingState(LightingStateRequest) returns (OperationResponse) {}
-  rpc setLightingBrightness(LightingBrightnessRequest) returns (OperationResponse) {}
-  rpc respondToMotionDetection(stream MotionDetectedEvent) returns (Empty) {}
-  rpc registerLightingDevice(LightingDevice) returns (OperationResponse) {}
-  rpc deregisterLightingDevice(LightingDevice) returns (OperationResponse) {}
-}
-
-message LightingScheduleRequest {
-  int32 roomNumber = 1;
-  DeviceState lightingState = 2;
-  float brightness = 3;
-  int32 startHour = 4;
-  int32 endHour = 5;
+  rpc setLightingState(LightingStateRequest) returns (LightingDeviceDetails) {}
+  rpc setLightingBrightness(LightingBrightnessRequest) returns (LightingDeviceDetails) {}
+  rpc respondToMotionDetection(stream MotionEvent) returns (stream LightingDeviceDetails) {}
+  rpc registerLightingDevice(LightingDevice) returns (LightingDeviceDetails) {}
+  rpc deregisterLightingDevice(LightingDevice) returns (LightingDeviceDetails) {}
+  rpc turnOffLights(stream LightingDevice) returns (OperationResponse) {}
 }
 
 message LightingStateRequest {
@@ -50,11 +40,18 @@ message LightingBrightnessRequest {
   float brightness = 2;
 }
 
-message MotionDetectedEvent {
+message MotionEvent {
   int32 roomNumber = 1;
+  bool motionState = 2;
 }
 
 message LightingDevice {
   int32 roomNumber = 1;
   int32 deviceNumber = 2;
+}
+
+message LightingDeviceDetails {
+  int32 deviceNumber = 1;
+  DeviceState lightingDeviceState = 2;
+  float brightness = 3;
 }

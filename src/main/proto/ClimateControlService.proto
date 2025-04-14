@@ -6,8 +6,6 @@ option java_outer_classname = "ClimateServiceImpl";
 
 package ClimateService;
 
-message Empty {}
-
 // Enums
 enum DeviceState {
   OFF = 0;
@@ -17,45 +15,43 @@ enum DeviceState {
 message OperationResponse {
   string operationName = 1;
   bool isSuccessful = 2;
+  string message = 3;
 }
 
 // -------------------
 
 // Climate Control Service
-
 service ClimateControlService {
   rpc setTargetClimateSettings(TargetClimateSetting) returns (OperationResponse) {}
-  rpc respondToHumidityReading(stream HumidityChangeEvent) returns (Empty) {}
-  rpc respondToTemperatureReading(stream TemperatureChangeEvent) returns (Empty) {}
-  rpc setHeatingState(HeatingStateRequest) returns (OperationResponse) {}
-  rpc setACState(ACStateRequest) returns (OperationResponse) {}
-  rpc setHumidifierDehumidifierState(HumidifierDehumidifierStateRequest) returns (OperationResponse) {}
+  rpc respondToHumidityReading(HumidityChangeEvent) returns (ClimateDevicesState) {}
+  rpc respondToTemperatureReading(TemperatureChangeEvent) returns (ClimateDevicesState) {}
+  rpc setHeatingState(HeatingStateRequest) returns (ClimateDevicesState) {}
+  rpc setACState(ACStateRequest) returns (ClimateDevicesState) {}
+  rpc setHumidifierDehumidifierState(HumidifierDehumidifierStateRequest) returns (ClimateDevicesState) {}
+  rpc getClimateDevicesState(ClimateDevicesStateRequest) returns (ClimateDevicesState) {}
+  rpc getTemperatureHistory(TemperatureHistoryRequest) returns (stream TemperatureReading) {}
+  rpc getHumidityHistory(HumidityHistoryRequest) returns (stream HumidityReading) {}
 }
 
 message TargetClimateSetting {
-  int32 roomNumber = 1;
-  int32 targetTemperature = 2;
-  int32 targetHumidity = 3;
+  int32 targetTemperature = 1;
+  int32 targetHumidity = 2;
 }
 
 message HumidityChangeEvent {
-  int32 roomNumber = 1;
-  int32 humidity = 2;
+  int32 humidity = 1;
 }
 
 message TemperatureChangeEvent {
-  int32 roomNumber = 1;
-  int32 temperature = 2;
+  int32 temperature = 1;
 }
 
 message HeatingStateRequest {
-  int32 roomNumber = 1;
-  DeviceState heatingState = 2;
+  DeviceState heatingState = 1;
 }
 
 message ACStateRequest {
-  int32 roomNumber = 1;
-  DeviceState acState = 2;
+  DeviceState acState = 1;
 }
 
 enum HumidifierDehumidifierState {
@@ -65,6 +61,31 @@ enum HumidifierDehumidifierState {
 }
 
 message HumidifierDehumidifierStateRequest {
-  int32 roomNumber = 1;
-  HumidifierDehumidifierState state = 2;
+  HumidifierDehumidifierState state = 1;
+}
+
+message ClimateDevicesState {
+  HumidifierDehumidifierState humidityDeviceState = 1;
+  DeviceState acState = 2;
+  DeviceState heatingState = 3;
+}
+
+message ClimateDevicesStateRequest {}
+
+message TemperatureHistoryRequest {
+  int32 maxNoOfReadings = 1;
+}
+
+message HumidityHistoryRequest {
+  int32 maxNoOfReadings = 1;
+}
+
+message TemperatureReading {
+  string time = 1;
+  int32 temperature = 2;
+}
+
+message HumidityReading {
+  string time = 1;
+  int32 humidity = 2;
 }
