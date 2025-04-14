@@ -61,8 +61,41 @@ public class LightingService extends LightingServiceImplBase {
     public StreamObserver<MotionEvent> respondToMotionDetection(
             StreamObserver<LightingDeviceDetails> responseObserver
     ) {
-        // TODO
-        return null;
+        return new StreamObserver<MotionEvent>() {
+            @Override
+            public void onNext(MotionEvent motionEvent) {
+                for (LightingDeviceDetails lightingDeviceDetails : lightingDetails.values()) {
+                    if (lightingDeviceDetails.getLightingDevice().getRoomNumber() == motionEvent.getRoomNumber()) {
+                        LightingDeviceDetails newLightingDeviceDetails;
+                        if (motionEvent.getMotionState()) {
+                            newLightingDeviceDetails = LightingDeviceDetails
+                                    .newBuilder(lightingDeviceDetails)
+                                    .setLightingDeviceState(DeviceState.ON)
+                                    .build();
+                        } else {
+                            newLightingDeviceDetails = LightingDeviceDetails
+                                    .newBuilder(lightingDeviceDetails)
+                                    .setLightingDeviceState(DeviceState.OFF)
+                                    .build();
+                        }
+                        lightingDetails.put(newLightingDeviceDetails.getLightingDevice().getDeviceNumber(), newLightingDeviceDetails);
+
+                        responseObserver.onNext(newLightingDeviceDetails);
+                    }
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                responseObserver.onError(new Exception("Server received Error from Client: " + throwable.getMessage()));
+                responseObserver.onCompleted();
+            }
+
+            @Override
+            public void onCompleted() {
+                responseObserver.onCompleted();
+            }
+        };
     }
 
     @Override
@@ -110,8 +143,48 @@ public class LightingService extends LightingServiceImplBase {
     public StreamObserver<LightingDevice> turnOffLights(
             StreamObserver<OperationResponse> responseObserver
     ) {
-        // TODO
-        return null;
+        return new StreamObserver<LightingDevice>() {
+            @Override
+            public void onNext(LightingDevice lightingDevice) {
+                if (!lightingDetails.containsKey(lightingDevice.getDeviceNumber())) {
+                    responseObserver.onError(new Exception("No lighting device with the given number '"
+                            + lightingDevice.getDeviceNumber() + "' exists."));
+                    responseObserver.onCompleted();
+                } else {
+                    LightingDeviceDetails oldLightingDeviceDetails = lightingDetails.get(lightingDevice.getDeviceNumber());
+
+                    LightingDeviceDetails lightingDeviceDetails = LightingDeviceDetails.newBuilder(oldLightingDeviceDetails)
+                            .setLightingDeviceState(DeviceState.OFF)
+                            .build();
+
+                    lightingDetails.put(lightingDevice.getDeviceNumber(), lightingDeviceDetails);
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                OperationResponse operationResponse = OperationResponse.newBuilder()
+                        .setIsSuccessful(false)
+                        .setOperationName("turnOffLights")
+                        .setMessage("Received Client Error: " + throwable.getMessage())
+                        .build();
+
+                responseObserver.onNext(operationResponse);
+                responseObserver.onCompleted();
+            }
+
+            @Override
+            public void onCompleted() {
+                OperationResponse operationResponse = OperationResponse.newBuilder()
+                        .setIsSuccessful(true)
+                        .setOperationName("turnOffLights")
+                        .setMessage("All given lights are turned off successfully")
+                        .build();
+
+                responseObserver.onNext(operationResponse);
+                responseObserver.onCompleted();
+            }
+        };
     }
     
 }
