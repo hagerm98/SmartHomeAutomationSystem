@@ -20,8 +20,8 @@ message OperationResponse {
 
 // -------------------
 
-// Climate Control Service
-service ClimateControlService {
+// Climate Service
+service ClimateService {
   rpc setTargetClimateSettings(TargetClimateSetting) returns (OperationResponse) {}
   rpc respondToHumidityReading(HumidityChangeEvent) returns (ClimateDevicesState) {}
   rpc respondToTemperatureReading(TemperatureChangeEvent) returns (ClimateDevicesState) {}

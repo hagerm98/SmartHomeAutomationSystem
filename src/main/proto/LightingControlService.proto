@@ -20,8 +20,8 @@ message OperationResponse {
 
 // -------------
 
-// Lighting Control Service
-service LightingControlService {
+// Lighting Service
+service LightingService {
   rpc setLightingState(LightingStateRequest) returns (LightingDeviceDetails) {}
   rpc setLightingBrightness(LightingBrightnessRequest) returns (LightingDeviceDetails) {}
   rpc respondToMotionDetection(stream MotionEvent) returns (stream LightingDeviceDetails) {}
