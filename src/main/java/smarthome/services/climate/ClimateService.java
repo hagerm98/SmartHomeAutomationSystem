@@ -4,6 +4,10 @@ import io.grpc.stub.StreamObserver;
 import smarthome.generated.climate.*;
 import smarthome.generated.climate.ClimateServiceGrpc.ClimateServiceImplBase;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ClimateService extends ClimateServiceImplBase {
 
     int targetTemperature = 21;
@@ -11,6 +15,9 @@ public class ClimateService extends ClimateServiceImplBase {
     DeviceState heatingState = DeviceState.OFF;
     DeviceState acState = DeviceState.OFF;
     HumidifierDehumidifierState humidifierDehumidifierState = HumidifierDehumidifierState.HUMIDIFIER_DEHUMIDIFIER_OFF;
+
+    List<TemperatureReading> temperatureReadings = new ArrayList<>();
+    List<HumidityReading> humidityReadings = new ArrayList<>();
 
     @Override
     public void setTargetClimateSettings(
@@ -36,7 +43,29 @@ public class ClimateService extends ClimateServiceImplBase {
             HumidityChangeEvent request,
             StreamObserver<ClimateDevicesState> responseObserver
     ) {
-        // TODO
+        if (request.getHumidity() < targetHumidity) {
+            humidifierDehumidifierState = HumidifierDehumidifierState.HUMIDIFIER;
+        } else if (request.getHumidity() > targetHumidity) {
+            humidifierDehumidifierState = HumidifierDehumidifierState.DEHUMIDIFIER;
+        } else {
+            humidifierDehumidifierState = HumidifierDehumidifierState.HUMIDIFIER_DEHUMIDIFIER_OFF;
+        }
+
+        HumidityReading humidityReading = HumidityReading.newBuilder()
+                .setTime(Instant.now().toString())
+                .setHumidity(request.getHumidity())
+                .build();
+
+        humidityReadings.add(humidityReading);
+
+        ClimateDevicesState climateDevicesState = ClimateDevicesState.newBuilder()
+                .setAcState(acState)
+                .setHeatingState(heatingState)
+                .setHumidityDeviceState(humidifierDehumidifierState)
+                .build();
+
+        responseObserver.onNext(climateDevicesState);
+        responseObserver.onCompleted();
     }
 
     @Override
@@ -44,7 +73,32 @@ public class ClimateService extends ClimateServiceImplBase {
             TemperatureChangeEvent request,
             StreamObserver<ClimateDevicesState> responseObserver
     ) {
-        // TODO
+        if (request.getTemperature() < targetTemperature) {
+            heatingState = DeviceState.ON;
+            acState = DeviceState.OFF;
+        } else if (request.getTemperature() > targetTemperature) {
+            heatingState = DeviceState.OFF;
+            acState = DeviceState.ON;
+        } else {
+            heatingState = DeviceState.OFF;
+            acState = DeviceState.OFF;
+        }
+
+        TemperatureReading temperatureReading = TemperatureReading.newBuilder()
+                .setTime(Instant.now().toString())
+                .setTemperature(request.getTemperature())
+                .build();
+
+        temperatureReadings.add(temperatureReading);
+
+        ClimateDevicesState climateDevicesState = ClimateDevicesState.newBuilder()
+                .setAcState(acState)
+                .setHeatingState(heatingState)
+                .setHumidityDeviceState(humidifierDehumidifierState)
+                .build();
+
+        responseObserver.onNext(climateDevicesState);
+        responseObserver.onCompleted();
     }
 
     @Override
@@ -118,7 +172,18 @@ public class ClimateService extends ClimateServiceImplBase {
             TemperatureHistoryRequest request,
             StreamObserver<TemperatureReading> responseObserver
     ) {
-        // TODO
+        if (temperatureReadings.isEmpty()) {
+            responseObserver.onError(new Exception("No entries found for Temperature readings at the moment."));
+            responseObserver.onCompleted();
+        } else {
+            int numberOfHistoryEntries = Math.min(request.getMaxNoOfReadings(), temperatureReadings.size());
+
+            for (int i = 0; i < numberOfHistoryEntries; i++) {
+                responseObserver.onNext(temperatureReadings.get(i));
+            }
+
+            responseObserver.onCompleted();
+        }
     }
 
     @Override
@@ -126,7 +191,18 @@ public class ClimateService extends ClimateServiceImplBase {
             HumidityHistoryRequest request,
             StreamObserver<HumidityReading> responseObserver
     ) {
-        // TODO
+        if (humidityReadings.isEmpty()) {
+            responseObserver.onError(new Exception("No entries found for Humidity readings at the moment."));
+            responseObserver.onCompleted();
+        } else {
+            int numberOfHistoryEntries = Math.min(request.getMaxNoOfReadings(), humidityReadings.size());
+
+            for (int i = 0; i < numberOfHistoryEntries; i++) {
+                responseObserver.onNext(humidityReadings.get(i));
+            }
+
+            responseObserver.onCompleted();
+        }
     }
     
 }
