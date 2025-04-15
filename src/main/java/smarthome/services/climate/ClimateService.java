@@ -174,7 +174,6 @@ public class ClimateService extends ClimateServiceImplBase {
     ) {
         if (temperatureReadings.isEmpty()) {
             responseObserver.onError(new Exception("No entries found for Temperature readings at the moment."));
-            responseObserver.onCompleted();
         } else {
             int numberOfHistoryEntries = Math.min(request.getMaxNoOfReadings(), temperatureReadings.size());
 
@@ -193,7 +192,6 @@ public class ClimateService extends ClimateServiceImplBase {
     ) {
         if (humidityReadings.isEmpty()) {
             responseObserver.onError(new Exception("No entries found for Humidity readings at the moment."));
-            responseObserver.onCompleted();
         } else {
             int numberOfHistoryEntries = Math.min(request.getMaxNoOfReadings(), humidityReadings.size());
 

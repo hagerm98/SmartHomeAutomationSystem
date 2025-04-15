@@ -29,9 +29,8 @@ public class LightingService extends LightingServiceImplBase {
             lightingDetails.put(request.getDeviceNumber(), lightingDeviceDetails);
 
             responseObserver.onNext(lightingDeviceDetails);
+            responseObserver.onCompleted();
         }
-
-        responseObserver.onCompleted();
     }
 
     @Override
@@ -52,9 +51,8 @@ public class LightingService extends LightingServiceImplBase {
             lightingDetails.put(request.getDeviceNumber(), lightingDeviceDetails);
 
             responseObserver.onNext(lightingDeviceDetails);
+            responseObserver.onCompleted();
         }
-
-        responseObserver.onCompleted();
     }
 
     @Override
@@ -88,7 +86,6 @@ public class LightingService extends LightingServiceImplBase {
             @Override
             public void onError(Throwable throwable) {
                 responseObserver.onError(new Exception("Server received Error from Client: " + throwable.getMessage()));
-                responseObserver.onCompleted();
             }
 
             @Override
@@ -117,9 +114,8 @@ public class LightingService extends LightingServiceImplBase {
             lightingDetails.put(request.getDeviceNumber(), lightingDeviceDetails);
 
             responseObserver.onNext(lightingDeviceDetails);
+            responseObserver.onCompleted();
         }
-
-        responseObserver.onCompleted();
     }
 
     @Override
@@ -134,9 +130,8 @@ public class LightingService extends LightingServiceImplBase {
             LightingDeviceDetails lightingDeviceDetails = lightingDetails.remove(request.getDeviceNumber());
 
             responseObserver.onNext(lightingDeviceDetails);
+            responseObserver.onCompleted();
         }
-
-        responseObserver.onCompleted();
     }
 
     @Override
@@ -149,7 +144,6 @@ public class LightingService extends LightingServiceImplBase {
                 if (!lightingDetails.containsKey(lightingDevice.getDeviceNumber())) {
                     responseObserver.onError(new Exception("No lighting device with the given number '"
                             + lightingDevice.getDeviceNumber() + "' exists."));
-                    responseObserver.onCompleted();
                 } else {
                     LightingDeviceDetails oldLightingDeviceDetails = lightingDetails.get(lightingDevice.getDeviceNumber());
 
