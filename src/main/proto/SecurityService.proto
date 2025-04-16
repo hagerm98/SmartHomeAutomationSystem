@@ -6,23 +6,19 @@ option java_outer_classname = "SecurityServiceImpl";
 
 package SecurityService;
 
-message OperationResponse {
-  string operationName = 1;
-  bool isSuccessful = 2;
-  string message = 3;
-}
+import "SmartHomeGeneral.proto";
 
 // ---------------------
 
 // Security Service
 service SecurityService {
-  rpc lockDoor(LockDoorRequest) returns (OperationResponse) {}
-  rpc unlockDoor(UnlockDoorRequest) returns (OperationResponse) {}
-  rpc registerSecurityDevice(SecurityDevice) returns (OperationResponse) {}
-  rpc deregisterSecurityDevice(SecurityDevice) returns (OperationResponse) {}
+  rpc lockDoor(LockDoorRequest) returns (General.OperationResponse) {}
+  rpc unlockDoor(UnlockDoorRequest) returns (General.OperationResponse) {}
+  rpc registerSecurityDevice(SecurityDevice) returns (General.OperationResponse) {}
+  rpc deregisterSecurityDevice(SecurityDevice) returns (General.OperationResponse) {}
   rpc respondToSecurityEvent(SecurityEvent) returns (stream SecurityEventAction) {}
-  rpc lockDoors(stream LockDoorRequest) returns (OperationResponse) {}
-  rpc unlockDoors(stream UnlockDoorRequest) returns (OperationResponse) {}
+  rpc lockDoors(stream LockDoorRequest) returns (General.OperationResponse) {}
+  rpc unlockDoors(stream UnlockDoorRequest) returns (General.OperationResponse) {}
 }
 
 message LockDoorRequest {

@@ -1,6 +1,8 @@
 package smarthome.services.lighting;
 
 import io.grpc.stub.StreamObserver;
+import smarthome.generated.general.DeviceState;
+import smarthome.generated.general.OperationResponse;
 import smarthome.generated.lighting.*;
 import smarthome.generated.lighting.LightingServiceGrpc.LightingServiceImplBase;
 

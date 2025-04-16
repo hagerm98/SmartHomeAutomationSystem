@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "smarthome.generated.general";
+
+package General;
+
+// Enums
+enum DeviceState {
+  OFF = 0;
+  ON = 1;
+}
+
+message OperationResponse {
+  string operationName = 1;
+  bool isSuccessful = 2;
+  string message = 3;
+}

@@ -1,6 +1,7 @@
 package smarthome.services.security;
 
 import io.grpc.stub.StreamObserver;
+import smarthome.generated.general.OperationResponse;
 import smarthome.generated.security.*;
 import smarthome.generated.security.SecurityServiceGrpc.SecurityServiceImplBase;
 

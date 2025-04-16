@@ -6,17 +6,7 @@ option java_outer_classname = "LightingServiceImpl";
 
 package LightingService;
 
-// Enums
-enum DeviceState {
-  OFF = 0;
-  ON = 1;
-}
-
-message OperationResponse {
-  string operationName = 1;
-  bool isSuccessful = 2;
-  string message = 3;
-}
+import "SmartHomeGeneral.proto";
 
 // -------------
 
@@ -27,12 +17,12 @@ service LightingService {
   rpc respondToMotionDetection(stream MotionEvent) returns (stream LightingDeviceDetails) {}
   rpc registerLightingDevice(LightingDevice) returns (LightingDeviceDetails) {}
   rpc deregisterLightingDevice(LightingDevice) returns (LightingDeviceDetails) {}
-  rpc turnOffLights(stream LightingDevice) returns (OperationResponse) {}
+  rpc turnOffLights(stream LightingDevice) returns (General.OperationResponse) {}
 }
 
 message LightingStateRequest {
   int32 deviceNumber = 1;
-  DeviceState lightingState = 2;
+  General.DeviceState lightingState = 2;
 }
 
 message LightingBrightnessRequest {
@@ -52,6 +42,6 @@ message LightingDevice {
 
 message LightingDeviceDetails {
   LightingDevice lightingDevice = 1;
-  DeviceState lightingDeviceState = 2;
+  General.DeviceState lightingDeviceState = 2;
   float brightness = 3;
 }

@@ -3,6 +3,8 @@ package smarthome.services.climate;
 import io.grpc.stub.StreamObserver;
 import smarthome.generated.climate.*;
 import smarthome.generated.climate.ClimateServiceGrpc.ClimateServiceImplBase;
+import smarthome.generated.general.DeviceState;
+import smarthome.generated.general.OperationResponse;
 
 import java.time.Instant;
 import java.util.ArrayList;

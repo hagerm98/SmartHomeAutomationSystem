@@ -6,23 +6,13 @@ option java_outer_classname = "ClimateServiceImpl";
 
 package ClimateService;
 
-// Enums
-enum DeviceState {
-  OFF = 0;
-  ON = 1;
-}
-
-message OperationResponse {
-  string operationName = 1;
-  bool isSuccessful = 2;
-  string message = 3;
-}
+import "SmartHomeGeneral.proto";
 
 // -------------------
 
 // Climate Service
 service ClimateService {
-  rpc setTargetClimateSettings(TargetClimateSetting) returns (OperationResponse) {}
+  rpc setTargetClimateSettings(TargetClimateSetting) returns (General.OperationResponse) {}
   rpc respondToHumidityReading(HumidityChangeEvent) returns (ClimateDevicesState) {}
   rpc respondToTemperatureReading(TemperatureChangeEvent) returns (ClimateDevicesState) {}
   rpc setHeatingState(HeatingStateRequest) returns (ClimateDevicesState) {}
@@ -47,11 +37,11 @@ message TemperatureChangeEvent {
 }
 
 message HeatingStateRequest {
-  DeviceState heatingState = 1;
+  General.DeviceState heatingState = 1;
 }
 
 message ACStateRequest {
-  DeviceState acState = 1;
+  General.DeviceState acState = 1;
 }
 
 enum HumidifierDehumidifierState {
@@ -66,8 +56,8 @@ message HumidifierDehumidifierStateRequest {
 
 message ClimateDevicesState {
   HumidifierDehumidifierState humidityDeviceState = 1;
-  DeviceState acState = 2;
-  DeviceState heatingState = 3;
+  General.DeviceState acState = 2;
+  General.DeviceState heatingState = 3;
 }
 
 message ClimateDevicesStateRequest {}
