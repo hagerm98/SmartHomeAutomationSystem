@@ -4,17 +4,30 @@
  */
 package smarthome.client;
 
+import io.grpc.stub.StreamObserver;
+import smarthome.generated.lighting.LightingDevice;
+import smarthome.generated.lighting.MotionEvent;
+import smarthome.generated.security.LockDoorRequest;
+import smarthome.generated.security.UnlockDoorRequest;
+
 /**
  *
  * @author hager
  */
 public class SmartHomeGUI extends javax.swing.JFrame {
 
+    private final SmartHomeClient smartHomeClient;
+    private StreamObserver<MotionEvent> motionEventsRequestObserver;
+    private StreamObserver<LightingDevice> turnOffLightsRequestObserver;
+    private StreamObserver<LockDoorRequest> lockDoorsRequestObserver;
+    private StreamObserver<UnlockDoorRequest> unlockDoorsRequestObserver;
+
     /**
      * Creates new form SmartHomeGUI
      */
     public SmartHomeGUI() {
         initComponents();
+        this.smartHomeClient = new SmartHomeClient();
     }
 
     /**
