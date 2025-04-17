@@ -1,4 +1,4 @@
-package smarthome.services.climate;
+package smarthome.server.services.climate;
 
 import io.grpc.stub.StreamObserver;
 import smarthome.generated.climate.*;

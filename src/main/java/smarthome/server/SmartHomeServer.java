@@ -2,9 +2,9 @@ package smarthome.server;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
-import smarthome.services.climate.ClimateService;
-import smarthome.services.lighting.LightingService;
-import smarthome.services.security.SecurityService;
+import smarthome.server.services.climate.ClimateService;
+import smarthome.server.services.lighting.LightingService;
+import smarthome.server.services.security.SecurityService;
 
 import java.io.IOException;
 

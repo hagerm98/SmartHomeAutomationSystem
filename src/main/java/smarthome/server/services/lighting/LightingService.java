@@ -1,4 +1,4 @@
-package smarthome.services.lighting;
+package smarthome.server.services.lighting;
 
 import io.grpc.stub.StreamObserver;
 import smarthome.generated.general.DeviceState;
