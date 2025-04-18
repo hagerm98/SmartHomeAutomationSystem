@@ -14,10 +14,10 @@ import smarthome.generated.general.OperationResponse;
 import smarthome.generated.lighting.LightingDevice;
 import smarthome.generated.lighting.LightingDeviceDetails;
 import smarthome.generated.lighting.MotionEvent;
-import smarthome.generated.security.LockDoorRequest;
-import smarthome.generated.security.UnlockDoorRequest;
+import smarthome.generated.security.*;
 
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
  *
@@ -1739,47 +1739,180 @@ public class SmartHomeGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_getClimateHumidityHistoryAsyncButtonActionPerformed
 
     private void registerSecurityDeviceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerSecurityDeviceButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            int deviceNumber = Integer.parseInt(registerSecurityDeviceDeviceNumberText.getText());
+            SecurityDeviceType deviceType = SecurityDeviceType.valueOf(
+                    Objects.requireNonNull(registerSecurityDeviceDeviceTypeCombo.getSelectedItem()).toString()
+            );
+
+            OperationResponse operationResponse = smartHomeClient.registerSecurityDevice(deviceNumber, deviceType);
+
+            resultSecurityTextArea.append("Successfully Registered '" + deviceType + "' Security Device with number '"
+                    + deviceNumber + "': " + operationResponse.getMessage()
+                    + "\n");
+        } catch (Exception e) {
+            resultSecurityTextArea.append("Error registering security device due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_registerSecurityDeviceButtonActionPerformed
 
     private void deregisterSecurityDeviceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deregisterSecurityDeviceButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            int deviceNumber = Integer.parseInt(deregisterSecurityDeviceDeviceNumberText.getText());
+
+            OperationResponse operationResponse = smartHomeClient.deregisterSecurityDevice(deviceNumber);
+
+            resultSecurityTextArea.append("Successfully Deregistered Security Device with number '"
+                    + deviceNumber + "': " + operationResponse.getMessage()
+                    + "\n");
+        } catch (Exception e) {
+            resultSecurityTextArea.append("Error deregistering security device due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_deregisterSecurityDeviceButtonActionPerformed
 
     private void lockDoorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lockDoorButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            int doorNumber = Integer.parseInt(lockDoorDoorNumberText.getText());
+
+            OperationResponse operationResponse = smartHomeClient.lockDoor(doorNumber);
+
+            resultSecurityTextArea.append("Successfully Locked Door with number '"
+                    + doorNumber + "': " + operationResponse.getMessage()
+                    + "\n");
+        } catch (Exception e) {
+            resultSecurityTextArea.append("Error locking door due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_lockDoorButtonActionPerformed
 
     private void unlockDoorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_unlockDoorButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            int doorNumber = Integer.parseInt(unlockDoorDoorNumberText.getText());
+
+            OperationResponse operationResponse = smartHomeClient.unlockDoor(doorNumber);
+
+            resultSecurityTextArea.append("Successfully Unlocked Door with number '"
+                    + doorNumber + "': " + operationResponse.getMessage()
+                    + "\n");
+        } catch (Exception e) {
+            resultSecurityTextArea.append("Error unlocking door due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_unlockDoorButtonActionPerformed
 
     private void respondToSecurityEventSendEventButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_respondToSecurityEventSendEventButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            SecurityEvent securityEvent = SecurityEvent.newBuilder()
+                    .setDeviceNumber(Integer.parseInt(respondToSecurityEventDeviceNumberText.getText()))
+                    .setEventType(SecurityEventType.valueOf(
+                            Objects.requireNonNull(respondToSecurityEventEventTypeCombo.getSelectedItem()).toString()
+                    ))
+                    .build();
+
+            smartHomeClient.respondToSecurityEvent(securityEvent, new StreamObserver<SecurityEventAction>() {
+                @Override
+                public void onNext(SecurityEventAction securityEventAction) {
+                    resultSecurityTextArea.append("Received Security Action: "
+                            + securityEventAction.toString().replace("\n", " ") + "\n");
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    resultSecurityTextArea.append("Error in Security Event stream: " + t.getMessage() + "\n");
+                }
+
+                @Override
+                public void onCompleted() {
+                    resultSecurityTextArea.append("Security Event stream completed.\n");
+                }
+            });
+            resultSecurityTextArea.append("Sent Security Event: " + securityEvent.toString().replace("\n", " ") + "\n");
+        } catch (Exception e) {
+            resultSecurityTextArea.append("Error sending security event due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_respondToSecurityEventSendEventButtonActionPerformed
 
     private void lockDoorsOpenClientStreamButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lockDoorsOpenClientStreamButtonActionPerformed
-        // TODO add your handling code here:
+        this.lockDoorsRequestObserver = smartHomeClient.lockDoors(new StreamObserver<OperationResponse>() {
+            @Override
+            public void onNext(OperationResponse operationResponse) {
+                resultSecurityTextArea.append("Lock Doors Response: "
+                        + operationResponse.toString().replace("\n", " ") + "\n");
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                resultSecurityTextArea.append("Error in Lock Doors stream: " + t.getMessage() + "\n");
+            }
+
+            @Override
+            public void onCompleted() {
+                resultSecurityTextArea.append("Lock Doors stream completed.\n");
+            }
+        });
+        resultSecurityTextArea.append("Lock Doors client stream opened.\n");
     }//GEN-LAST:event_lockDoorsOpenClientStreamButtonActionPerformed
 
     private void lockDoorsLockButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lockDoorsLockButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            int doorNumber = Integer.parseInt(lockDoorsDoorNumberText.getText());
+
+            this.lockDoorsRequestObserver.onNext(LockDoorRequest.newBuilder()
+                    .setDoorNumber(doorNumber)
+                    .build());
+
+            resultSecurityTextArea.append("Sent Lock Door request for door: " + doorNumber + "\n");
+        } catch (Exception e) {
+            resultSecurityTextArea.append("Error sending lock door request due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_lockDoorsLockButtonActionPerformed
 
     private void lockDoorsCloseClientStreamButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lockDoorsCloseClientStreamButtonActionPerformed
-        // TODO add your handling code here:
+        if (this.lockDoorsRequestObserver != null) {
+            this.lockDoorsRequestObserver.onCompleted();
+            this.lockDoorsRequestObserver = null;
+        }
+        resultSecurityTextArea.append("Lock Doors stream closed.\n");
     }//GEN-LAST:event_lockDoorsCloseClientStreamButtonActionPerformed
 
     private void unlockDoorsOpenClientStreamButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_unlockDoorsOpenClientStreamButtonActionPerformed
-        // TODO add your handling code here:
+        this.unlockDoorsRequestObserver = smartHomeClient.unlockDoors(new StreamObserver<OperationResponse>() {
+            @Override
+            public void onNext(OperationResponse operationResponse) {
+                resultSecurityTextArea.append("Unlock Doors Response: "
+                        + operationResponse.toString().replace("\n", " ") + "\n");
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                resultSecurityTextArea.append("Error in Unlock Doors stream: " + t.getMessage() + "\n");
+            }
+
+            @Override
+            public void onCompleted() {
+                resultSecurityTextArea.append("Unlock Doors stream completed.\n");
+            }
+        });
+        resultSecurityTextArea.append("Unlock Doors client stream opened.\n");
     }//GEN-LAST:event_unlockDoorsOpenClientStreamButtonActionPerformed
 
     private void unlockDoorsUnlockButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_unlockDoorsUnlockButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            int doorNumber = Integer.parseInt(unlockDoorsDoorNumberText.getText());
+
+            this.unlockDoorsRequestObserver.onNext(UnlockDoorRequest.newBuilder()
+                    .setDoorNumber(doorNumber)
+                    .build());
+
+            resultSecurityTextArea.append("Sent Unlock Door request for door: " + doorNumber + "\n");
+        } catch (Exception e) {
+            resultSecurityTextArea.append("Error sending unlock door request due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_unlockDoorsUnlockButtonActionPerformed
 
     private void unlockDoorsCloseClientStreamButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_unlockDoorsCloseClientStreamButtonActionPerformed
-        // TODO add your handling code here:
+        if (this.unlockDoorsRequestObserver != null) {
+            this.unlockDoorsRequestObserver.onCompleted();
+            this.unlockDoorsRequestObserver = null;
+        }
+        resultSecurityTextArea.append("Unlock Doors stream closed.\n");
     }//GEN-LAST:event_unlockDoorsCloseClientStreamButtonActionPerformed
 
     /**
