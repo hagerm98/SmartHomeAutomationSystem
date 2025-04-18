@@ -27,6 +27,24 @@ public class SmartHomeServer {
                     .start();
 
             System.out.println("Smart Home Server started, listening on port: " + port);
+
+            // for graceful shutdown
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                System.out.println("Shutting down smart home server...");
+                server.shutdown();
+
+                try {
+                    if (!server.awaitTermination(30, java.util.concurrent.TimeUnit.SECONDS)) {
+                        server.shutdownNow();
+                    }
+                } catch (InterruptedException e) {
+                    System.out.println("Shutdown interrupted: " + e.getMessage());
+                    server.shutdownNow();
+                }
+
+                System.out.println("Server shut down.");
+            }));
+
             server.awaitTermination();
 
         } catch (IOException e) {

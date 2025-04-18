@@ -1,9 +1,6 @@
 package smarthome.server;
 
-import io.grpc.Metadata;
-import io.grpc.ServerCall;
-import io.grpc.ServerCallHandler;
-import io.grpc.ServerInterceptor;
+import io.grpc.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,11 +10,21 @@ public class LoggingInterceptor implements ServerInterceptor {
 
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
-            ServerCall<ReqT,RespT> call,
+            ServerCall<ReqT, RespT> call,
             Metadata headers,
             ServerCallHandler<ReqT, RespT> next
     ) {
-        logger.info("Method: {}",call.getMethodDescriptor().getFullMethodName());
-        return next.startCall(call, headers);
+        logger.info("Method: {}", call.getMethodDescriptor().getFullMethodName());
+        logger.info("Headers: {}", headers);
+
+        return new ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(
+                next.startCall(call, headers)
+        ) {
+            @Override
+            public void onMessage(ReqT message) {
+                logger.info("Request Parameters: {}", message);
+                super.onMessage(message);
+            }
+        };
     }
 }

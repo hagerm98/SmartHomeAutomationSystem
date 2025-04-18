@@ -1481,6 +1481,7 @@ public class SmartHomeGUI extends javax.swing.JFrame {
             @Override
             public void onError(Throwable t) {
                 resultLightingTextArea.append("Error in Motion Sensor stream: " + t.getMessage() + "\n");
+                smartHomeClient.cancelOperation();
             }
 
             @Override
@@ -1510,6 +1511,7 @@ public class SmartHomeGUI extends javax.swing.JFrame {
             @Override
             public void onError(Throwable t) {
                 resultLightingTextArea.append("Error in Turn Off Lights stream: " + t.getMessage() + "\n");
+                smartHomeClient.cancelOperation();
             }
 
             @Override
@@ -1689,6 +1691,7 @@ public class SmartHomeGUI extends javax.swing.JFrame {
                 @Override
                 public void onError(Throwable t) {
                     resultClimateTextArea.append("Error in Temperature History stream: " + t.getMessage() + "\n");
+                    smartHomeClient.cancelOperation();
                 }
 
                 @Override
@@ -1729,6 +1732,7 @@ public class SmartHomeGUI extends javax.swing.JFrame {
                 @Override
                 public void onError(Throwable t) {
                     resultClimateTextArea.append("Error in Humidity History stream: " + t.getMessage() + "\n");
+                    smartHomeClient.cancelOperation();
                 }
 
                 @Override
@@ -1820,6 +1824,7 @@ public class SmartHomeGUI extends javax.swing.JFrame {
                 @Override
                 public void onError(Throwable t) {
                     resultSecurityTextArea.append("Error in Security Event stream: " + t.getMessage() + "\n");
+                    smartHomeClient.cancelOperation();
                 }
 
                 @Override
@@ -1844,6 +1849,7 @@ public class SmartHomeGUI extends javax.swing.JFrame {
             @Override
             public void onError(Throwable t) {
                 resultSecurityTextArea.append("Error in Lock Doors stream: " + t.getMessage() + "\n");
+                smartHomeClient.cancelOperation();
             }
 
             @Override
@@ -1887,6 +1893,7 @@ public class SmartHomeGUI extends javax.swing.JFrame {
             @Override
             public void onError(Throwable t) {
                 resultSecurityTextArea.append("Error in Unlock Doors stream: " + t.getMessage() + "\n");
+                smartHomeClient.cancelOperation();
             }
 
             @Override

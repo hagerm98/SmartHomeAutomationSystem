@@ -6,7 +6,9 @@ import smarthome.generated.general.OperationResponse;
 import smarthome.generated.security.*;
 import smarthome.generated.security.SecurityServiceGrpc.SecurityServiceImplBase;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SecurityService extends SecurityServiceImplBase {
@@ -16,6 +18,9 @@ public class SecurityService extends SecurityServiceImplBase {
 
     // Security devices registered with the system
     Map<Integer, SecurityDevice> registeredDevices = new HashMap<>();
+
+    List<Integer> requestedDoorNumbersLock = new ArrayList<>();
+    List<Integer> requestedDoorNumbersUnlock = new ArrayList<>();
 
     @Override
     public void lockDoor(
@@ -228,6 +233,9 @@ public class SecurityService extends SecurityServiceImplBase {
 
                 // Update the door's lock state
                 doorLockedStates.put(doorNumber, true);
+
+                // Add the door number to the list of requested doors
+                requestedDoorNumbersLock.add(doorNumber);
             }
 
             @Override
@@ -240,6 +248,8 @@ public class SecurityService extends SecurityServiceImplBase {
 
                 responseObserver.onNext(operationResponse);
                 responseObserver.onCompleted();
+
+                requestedDoorNumbersLock.clear();
             }
 
             @Override
@@ -247,11 +257,13 @@ public class SecurityService extends SecurityServiceImplBase {
                 OperationResponse operationResponse = OperationResponse.newBuilder()
                         .setIsSuccessful(true)
                         .setOperationName("lockDoors")
-                        .setMessage("All requested doors have been locked.")
+                        .setMessage("All requested doors " + requestedDoorNumbersLock + " have been locked.")
                         .build();
                 
                 responseObserver.onNext(operationResponse);
                 responseObserver.onCompleted();
+
+                requestedDoorNumbersLock.clear();
             }
         };
     }
@@ -276,6 +288,9 @@ public class SecurityService extends SecurityServiceImplBase {
 
                 // Update the door's lock state
                 doorLockedStates.put(doorNumber, false);
+
+                // Add the door number to the list of requested doors
+                requestedDoorNumbersUnlock.add(doorNumber);
             }
 
             @Override
@@ -288,6 +303,8 @@ public class SecurityService extends SecurityServiceImplBase {
 
                 responseObserver.onNext(operationResponse);
                 responseObserver.onCompleted();
+
+                requestedDoorNumbersUnlock.clear();
             }
 
             @Override
@@ -295,11 +312,13 @@ public class SecurityService extends SecurityServiceImplBase {
                 OperationResponse operationResponse = OperationResponse.newBuilder()
                         .setIsSuccessful(true)
                         .setOperationName("unlockDoors")
-                        .setMessage("All requested doors have been unlocked.")
+                        .setMessage("All requested doors " + requestedDoorNumbersUnlock + " have been unlocked.")
                         .build();
                 
                 responseObserver.onNext(operationResponse);
                 responseObserver.onCompleted();
+
+                requestedDoorNumbersUnlock.clear();
             }
         };
     }
