@@ -181,7 +181,11 @@ public class ClimateService extends ClimateServiceImplBase {
                     .asRuntimeException()
             );
         } else {
-            int numberOfHistoryEntries = Math.min(request.getMaxNoOfReadings(), temperatureReadings.size());
+            int numberOfHistoryEntries = temperatureReadings.size();
+
+            if (request.getMaxNoOfReadings() > 0) {
+                numberOfHistoryEntries = Math.min(request.getMaxNoOfReadings(), temperatureReadings.size());
+            }
 
             for (int i = 0; i < numberOfHistoryEntries; i++) {
                 responseObserver.onNext(temperatureReadings.get(i));
@@ -202,7 +206,12 @@ public class ClimateService extends ClimateServiceImplBase {
                     .asRuntimeException()
             );
         } else {
-            int numberOfHistoryEntries = Math.min(request.getMaxNoOfReadings(), humidityReadings.size());
+
+            int numberOfHistoryEntries = humidityReadings.size();
+
+            if (request.getMaxNoOfReadings() > 0) {
+                numberOfHistoryEntries = Math.min(request.getMaxNoOfReadings(), humidityReadings.size());
+            }
 
             for (int i = 0; i < numberOfHistoryEntries; i++) {
                 responseObserver.onNext(humidityReadings.get(i));

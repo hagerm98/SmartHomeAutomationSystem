@@ -5,6 +5,10 @@
 package smarthome.client;
 
 import io.grpc.stub.StreamObserver;
+import smarthome.generated.climate.ClimateDevicesState;
+import smarthome.generated.climate.HumidifierDehumidifierState;
+import smarthome.generated.climate.HumidityReading;
+import smarthome.generated.climate.TemperatureReading;
 import smarthome.generated.general.DeviceState;
 import smarthome.generated.general.OperationResponse;
 import smarthome.generated.lighting.LightingDevice;
@@ -12,6 +16,8 @@ import smarthome.generated.lighting.LightingDeviceDetails;
 import smarthome.generated.lighting.MotionEvent;
 import smarthome.generated.security.LockDoorRequest;
 import smarthome.generated.security.UnlockDoorRequest;
+
+import java.util.Iterator;
 
 /**
  *
@@ -1519,47 +1525,217 @@ public class SmartHomeGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_turnOffLightsCloseClientStreamButtonActionPerformed
 
     private void setTargetClimateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setTargetClimateButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            int targetTemperature = Integer.parseInt(setTargetClimateTempText.getText());
+            int targetHumidity = Integer.parseInt(setTargetClimateHumidityText.getText());
+
+            OperationResponse operationResponse = smartHomeClient.setTargetClimateSettings(targetTemperature, targetHumidity);
+
+            resultClimateTextArea.append("Successfully Set Target Climate settings: "
+                    + operationResponse.getMessage()
+                    + "\n");
+        } catch (Exception e) {
+            resultClimateTextArea.append("Error setting target climate settings due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_setTargetClimateButtonActionPerformed
 
     private void respondToTempSensorSendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_respondToTempSensorSendButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            int temperatureReading = Integer.parseInt(respondToTempSensorTempText.getText());
+
+            ClimateDevicesState climateDevicesState = smartHomeClient.respondToTemperatureReading(temperatureReading);
+
+            resultClimateTextArea.append("Successfully Responded to Temperature Sensor input '" + temperatureReading
+                    + "' and now current devices state became: "
+                    + "[Heating: " + climateDevicesState.getHeatingState()
+                    + ", AirConditioner: " + climateDevicesState.getAcState()
+                    + ", Humidifier/Dehumidifier: " + climateDevicesState.getHumidityDeviceState() + "]"
+                    + "\n");
+        } catch (Exception e) {
+            resultClimateTextArea.append("Error sending temperature sensor input due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_respondToTempSensorSendButtonActionPerformed
 
     private void respondToHumiditySensorSendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_respondToHumiditySensorSendButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            int humidityReading = Integer.parseInt(respondToHumiditySensorHumidityText.getText());
+
+            ClimateDevicesState climateDevicesState = smartHomeClient.respondToHumidityReading(humidityReading);
+
+            resultClimateTextArea.append("Successfully Responded to Humidity Sensor input '" + humidityReading
+                    + "' and now current devices state became: "
+                    + "[Heating: " + climateDevicesState.getHeatingState()
+                    + ", AirConditioner: " + climateDevicesState.getAcState()
+                    + ", Humidifier/Dehumidifier: " + climateDevicesState.getHumidityDeviceState() + "]"
+                    + "\n");
+        } catch (Exception e) {
+            resultClimateTextArea.append("Error sending humidity sensor input due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_respondToHumiditySensorSendButtonActionPerformed
 
     private void setHeatingStateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setHeatingStateButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            DeviceState deviceState;
+            if (setHeatingStateRadioButtonOn.isSelected()) {
+                deviceState = DeviceState.ON;
+            } else if (setHeatingStateRadioButtonOff.isSelected()) {
+                deviceState = DeviceState.OFF;
+            } else {
+                throw new IllegalArgumentException("No heating state On/Off selected, please select the desired heating state");
+            }
+
+            ClimateDevicesState climateDevicesState = smartHomeClient.setHeatingState(deviceState);
+
+            resultClimateTextArea.append("Successfully Set Heating State to: " + deviceState + ", now devices state became: "
+                    + "[Heating: " + climateDevicesState.getHeatingState()
+                    + ", AirConditioner: " + climateDevicesState.getAcState()
+                    + ", Humidifier/Dehumidifier: " + climateDevicesState.getHumidityDeviceState() + "]"
+                    + "\n");
+        } catch (Exception e) {
+            resultClimateTextArea.append("Error setting heating state due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_setHeatingStateButtonActionPerformed
 
     private void setACStateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setACStateButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            DeviceState deviceState;
+            if (setACStateRadioButtonOn.isSelected()) {
+                deviceState = DeviceState.ON;
+            } else if (setACStateRadioButtonOff.isSelected()) {
+                deviceState = DeviceState.OFF;
+            } else {
+                throw new IllegalArgumentException("No AC state On/Off selected, please select the desired AC state");
+            }
+
+            ClimateDevicesState climateDevicesState = smartHomeClient.setACState(deviceState);
+
+            resultClimateTextArea.append("Successfully Set AC State to: " + deviceState + ", now devices state became: "
+                    + "[Heating: " + climateDevicesState.getHeatingState()
+                    + ", AirConditioner: " + climateDevicesState.getAcState()
+                    + ", Humidifier/Dehumidifier: " + climateDevicesState.getHumidityDeviceState() + "]"
+                    + "\n");
+        } catch (Exception e) {
+            resultClimateTextArea.append("Error setting AC state due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_setACStateButtonActionPerformed
 
     private void setHumidifierDehumidifierStateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setHumidifierDehumidifierStateButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            HumidifierDehumidifierState humidifierDehumidifierState;
+            if (setHumidifierDehumidiferStateRadioButtonHumidifier.isSelected()) {
+                humidifierDehumidifierState = HumidifierDehumidifierState.HUMIDIFIER;
+            } else if (setHumidifierDehumidiferStateRadioButtonDehumidifer.isSelected()) {
+                humidifierDehumidifierState = HumidifierDehumidifierState.DEHUMIDIFIER;
+            } else if (setHumidifierDehumidiferStateRadioButtonOff.isSelected()) {
+                humidifierDehumidifierState = HumidifierDehumidifierState.HUMIDIFIER_DEHUMIDIFIER_OFF;
+            } else {
+                throw new IllegalArgumentException("No humidifier/dehumidifier state selected, please select the desired state");
+            }
+
+            ClimateDevicesState climateDevicesState = smartHomeClient.setHumidifierDehumidifierState(humidifierDehumidifierState);
+
+            resultClimateTextArea.append("Successfully Set Humidifier/Dehumidifier State to: " + humidifierDehumidifierState + ", now devices state became: "
+                    + "[Heating: " + climateDevicesState.getHeatingState()
+                    + ", AirConditioner: " + climateDevicesState.getAcState()
+                    + ", Humidifier/Dehumidifier: " + climateDevicesState.getHumidityDeviceState() + "]"
+                    + "\n");
+        } catch (Exception e) {
+            resultClimateTextArea.append("Error setting humidifier/dehumidifier state due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_setHumidifierDehumidifierStateButtonActionPerformed
 
     private void getClimateDevicesStateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getClimateDevicesStateButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            ClimateDevicesState climateDevicesState = smartHomeClient.getClimateDevicesState();
+
+            resultClimateTextArea.append("Successfully Retrieved Current Climate Devices State: "
+                    + "[Heating: " + climateDevicesState.getHeatingState()
+                    + ", AirConditioner: " + climateDevicesState.getAcState()
+                    + ", Humidifier/Dehumidifier: " + climateDevicesState.getHumidityDeviceState() + "]"
+                    + "\n");
+        } catch (Exception e) {
+            resultClimateTextArea.append("Error getting climate devices state due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_getClimateDevicesStateButtonActionPerformed
 
     private void getClimateTemperatureHistorySyncButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getClimateTemperatureHistorySyncButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            Iterator<TemperatureReading> temperatureHistory = smartHomeClient.getTemperatureHistory();
+
+            StringBuilder sb = new StringBuilder();
+            while (temperatureHistory.hasNext()) {
+                TemperatureReading temperatureReading = temperatureHistory.next();
+                sb.append(temperatureReading.toString().replace("\n", " ")).append("\n");
+            }
+            resultClimateTextArea.append("Successfully Retrieved Temperature History: \n" + sb);
+        } catch (Exception e) {
+            resultClimateTextArea.append("Error getting temperature history due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_getClimateTemperatureHistorySyncButtonActionPerformed
 
     private void getClimateTemperatureHistoryAsyncButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getClimateTemperatureHistoryAsyncButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            smartHomeClient.getTemperatureHistoryAsync(new StreamObserver<TemperatureReading>() {
+                @Override
+                public void onNext(TemperatureReading temperatureReading) {
+                    resultClimateTextArea.append("Received Temperature Reading: "
+                            + temperatureReading.toString().replace("\n", " ") + "\n");
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    resultClimateTextArea.append("Error in Temperature History stream: " + t.getMessage() + "\n");
+                }
+
+                @Override
+                public void onCompleted() {
+                    resultClimateTextArea.append("Temperature History stream completed.\n");
+                }
+            });
+            resultClimateTextArea.append("Temperature History async stream opened.\n");
+        } catch (Exception e) {
+            resultClimateTextArea.append("Error opening temperature history async stream due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_getClimateTemperatureHistoryAsyncButtonActionPerformed
 
     private void getClimateHumidityHistorySyncButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getClimateHumidityHistorySyncButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            Iterator<HumidityReading> humidityHistory = smartHomeClient.getHumidityHistory();
+
+            StringBuilder sb = new StringBuilder();
+            while (humidityHistory.hasNext()) {
+                HumidityReading humidityReading = humidityHistory.next();
+                sb.append(humidityReading.toString().replace("\n", " ")).append("\n");
+            }
+            resultClimateTextArea.append("Successfully Retrieved Humidity History: \n" + sb);
+        } catch (Exception e) {
+            resultClimateTextArea.append("Error getting humidity history due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_getClimateHumidityHistorySyncButtonActionPerformed
 
     private void getClimateHumidityHistoryAsyncButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getClimateHumidityHistoryAsyncButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            smartHomeClient.getHumidityHistoryAsync(new StreamObserver<HumidityReading>() {
+                @Override
+                public void onNext(HumidityReading humidityReading) {
+                    resultClimateTextArea.append("Received Humidity Reading: "
+                            + humidityReading.toString().replace("\n", " ") + "\n");
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    resultClimateTextArea.append("Error in Humidity History stream: " + t.getMessage() + "\n");
+                }
+
+                @Override
+                public void onCompleted() {
+                    resultClimateTextArea.append("Humidity History stream completed.\n");
+                }
+            });
+            resultClimateTextArea.append("Humidity History async stream opened.\n");
+        } catch (Exception e) {
+            resultClimateTextArea.append("Error opening humidity history async stream due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_getClimateHumidityHistoryAsyncButtonActionPerformed
 
     private void registerSecurityDeviceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerSecurityDeviceButtonActionPerformed

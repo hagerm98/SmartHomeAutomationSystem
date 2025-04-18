@@ -17,6 +17,7 @@ public class SmartHomeClient {
     private final LightingServiceGrpc.LightingServiceStub lightingServiceStub;
 
     private final ClimateServiceGrpc.ClimateServiceBlockingStub climateServiceBlockingStub;
+    private final ClimateServiceGrpc.ClimateServiceStub climateServiceStub;
 
     private final SecurityServiceGrpc.SecurityServiceBlockingStub securityServiceBlockingStub;
     private final SecurityServiceGrpc.SecurityServiceStub securityServiceStub;
@@ -31,6 +32,7 @@ public class SmartHomeClient {
         this.lightingServiceStub = LightingServiceGrpc.newStub(channel);
 
         this.climateServiceBlockingStub = ClimateServiceGrpc.newBlockingStub(channel);
+        this.climateServiceStub = ClimateServiceGrpc.newStub(channel);
 
         this.securityServiceBlockingStub = SecurityServiceGrpc.newBlockingStub(channel);
         this.securityServiceStub = SecurityServiceGrpc.newStub(channel);
@@ -153,10 +155,18 @@ public class SmartHomeClient {
         );
     }
 
-    // Wrapper method to call climate service: getTemperatureHistory
+    // Wrapper method to call climate service: getTemperatureHistory (Sync)
     public Iterator<TemperatureReading> getTemperatureHistory() {
         return climateServiceBlockingStub.getTemperatureHistory(
                 TemperatureHistoryRequest.newBuilder().build()
+        );
+    }
+
+    // Wrapper method to call climate service: getTemperatureHistory (Async)
+    public void getTemperatureHistoryAsync(StreamObserver<TemperatureReading> responseObserver) {
+        climateServiceStub.getTemperatureHistory(
+                TemperatureHistoryRequest.newBuilder().build(),
+                responseObserver
         );
     }
 
@@ -164,6 +174,14 @@ public class SmartHomeClient {
     public Iterator<HumidityReading> getHumidityHistory() {
         return climateServiceBlockingStub.getHumidityHistory(
                 HumidityHistoryRequest.newBuilder().build()
+        );
+    }
+
+    // Wrapper method to call climate service: getHumidityHistory (Async)
+    public void getHumidityHistoryAsync(StreamObserver<HumidityReading> responseObserver) {
+        climateServiceStub.getHumidityHistory(
+                HumidityHistoryRequest.newBuilder().build(),
+                responseObserver
         );
     }
 
