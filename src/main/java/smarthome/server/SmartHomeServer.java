@@ -21,6 +21,7 @@ public class SmartHomeServer {
                     .addService(lightingService)
                     .addService(climateService)
                     .addService(securityService)
+                    .intercept(new AuthorizationServerInterceptor())
                     .build()
                     .start();
 

@@ -3,6 +3,8 @@ package smarthome.client;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import smarthome.generated.climate.*;
 import smarthome.generated.general.DeviceState;
 import smarthome.generated.general.OperationResponse;
@@ -22,20 +24,39 @@ public class SmartHomeClient {
     private final SecurityServiceGrpc.SecurityServiceBlockingStub securityServiceBlockingStub;
     private final SecurityServiceGrpc.SecurityServiceStub securityServiceStub;
 
+    public static final String JWT_SIGNING_KEY = "5idSuLeuVN5xGHVbwQyExrr1HWSBTfndgLtF5m3UzTo=";
+
     public SmartHomeClient() {
         ManagedChannel channel = ManagedChannelBuilder
                 .forAddress("localhost", 50051)
                 .usePlaintext()
                 .build();
 
-        this.lightingServiceBlockingStub = LightingServiceGrpc.newBlockingStub(channel);
-        this.lightingServiceStub = LightingServiceGrpc.newStub(channel);
+        BearerToken credentials = new BearerToken(Jwts.builder()
+                .setSubject("SmartHomeClientGUI")
+                .signWith(SignatureAlgorithm.HS256, JWT_SIGNING_KEY)
+                .compact());
 
-        this.climateServiceBlockingStub = ClimateServiceGrpc.newBlockingStub(channel);
-        this.climateServiceStub = ClimateServiceGrpc.newStub(channel);
+        this.lightingServiceBlockingStub = LightingServiceGrpc
+                .newBlockingStub(channel)
+                .withCallCredentials(credentials);
+        this.lightingServiceStub = LightingServiceGrpc
+                .newStub(channel)
+                .withCallCredentials(credentials);
 
-        this.securityServiceBlockingStub = SecurityServiceGrpc.newBlockingStub(channel);
-        this.securityServiceStub = SecurityServiceGrpc.newStub(channel);
+        this.climateServiceBlockingStub = ClimateServiceGrpc
+                .newBlockingStub(channel)
+                .withCallCredentials(credentials);
+        this.climateServiceStub = ClimateServiceGrpc
+                .newStub(channel)
+                .withCallCredentials(credentials);
+
+        this.securityServiceBlockingStub = SecurityServiceGrpc
+                .newBlockingStub(channel)
+                .withCallCredentials(credentials);
+        this.securityServiceStub = SecurityServiceGrpc
+                .newStub(channel)
+                .withCallCredentials(credentials);
     }
 
     // Methods to interact with the lighting service
