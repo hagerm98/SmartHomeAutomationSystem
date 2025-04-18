@@ -5,6 +5,8 @@
 package smarthome.client;
 
 import io.grpc.stub.StreamObserver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import smarthome.generated.climate.ClimateDevicesState;
 import smarthome.generated.climate.HumidifierDehumidifierState;
 import smarthome.generated.climate.HumidityReading;
@@ -24,6 +26,8 @@ import java.util.Objects;
  * @author hager
  */
 public class SmartHomeGUI extends javax.swing.JFrame {
+
+    private static final Logger logger = LoggerFactory.getLogger(SmartHomeGUI.class);
 
     private final SmartHomeClient smartHomeClient;
     private StreamObserver<MotionEvent> motionEventsRequestObserver;
@@ -1932,13 +1936,13 @@ public class SmartHomeGUI extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(SmartHomeGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            logger.error("Encountered an error 'ClassNotFoundException' while creating instances of GUI classes: {}", ex.getMessage());
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(SmartHomeGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            logger.error("Encountered an error 'InstantiationException' while instantiating GUI classes: {}", ex.getMessage());
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(SmartHomeGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            logger.error("Encountered an error 'IllegalAccessException' while instantiating GUI classes: {}", ex.getMessage());
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(SmartHomeGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            logger.error("Encountered an error 'UnsupportedLookAndFeelException' while instantiating GUI classes: {}", ex.getMessage());
         }
         //</editor-fold>
 
