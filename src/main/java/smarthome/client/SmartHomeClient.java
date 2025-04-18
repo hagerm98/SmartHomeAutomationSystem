@@ -40,6 +40,7 @@ public class SmartHomeClient {
                 .usePlaintext()
                 .build();
 
+        // Implemented authentication on client side using JWT token sent with every request
         BearerToken credentials = new BearerToken(Jwts.builder()
                 .setSubject("SmartHomeClientGUI")
                 .signWith(SignatureAlgorithm.HS256, JWT_SIGNING_KEY)

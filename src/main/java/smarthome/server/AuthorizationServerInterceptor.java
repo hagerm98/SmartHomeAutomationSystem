@@ -10,6 +10,7 @@ import static io.grpc.Metadata.ASCII_STRING_MARSHALLER;
 
 public class AuthorizationServerInterceptor implements ServerInterceptor {
 
+    // Implementing authentication on server side using JWT token validated on every incoming request using Server Interceptor
     public static final String JWT_SIGNING_KEY = "5idSuLeuVN5xGHVbwQyExrr1HWSBTfndgLtF5m3UzTo=";
     public static final String BEARER_TYPE = "Bearer";
 
