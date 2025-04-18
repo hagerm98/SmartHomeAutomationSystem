@@ -1,5 +1,6 @@
 package smarthome.server.services.security;
 
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import smarthome.generated.general.OperationResponse;
 import smarthome.generated.security.*;
@@ -25,8 +26,9 @@ public class SecurityService extends SecurityServiceImplBase {
 
         // Check if the door exists and return an error if it doesn't
         if (!doorLockedStates.containsKey(doorNumber)) {
-            responseObserver.onError(
-                    new IllegalArgumentException("Door '" + doorNumber + "' does not exist.")
+            responseObserver.onError(Status.NOT_FOUND
+                    .withDescription("Door '" + doorNumber + "' does not exist.")
+                    .asRuntimeException()
             );
             return;
         }
@@ -54,8 +56,9 @@ public class SecurityService extends SecurityServiceImplBase {
 
         // Check if the door exists and return an error if it doesn't
         if (!doorLockedStates.containsKey(doorNumber)) {
-            responseObserver.onError(
-                    new IllegalArgumentException("Door '" + doorNumber + "' does not exist.")
+            responseObserver.onError(Status.NOT_FOUND
+                    .withDescription("Door '" + doorNumber + "' does not exist.")
+                    .asRuntimeException()
             );
             return;
         }
@@ -83,8 +86,9 @@ public class SecurityService extends SecurityServiceImplBase {
 
         // Check if the device is already registered
         if (registeredDevices.containsKey(deviceNumber)) {
-            responseObserver.onError(
-                    new IllegalArgumentException("Device '" + deviceNumber + "' is already registered.")
+            responseObserver.onError(Status.ALREADY_EXISTS
+                    .withDescription("Device '" + deviceNumber + "' is already registered.")
+                    .asRuntimeException()
             );
             return;
         }
@@ -117,8 +121,9 @@ public class SecurityService extends SecurityServiceImplBase {
 
         // Check if the device is registered
         if (!registeredDevices.containsKey(deviceNumber)) {
-            responseObserver.onError(
-                    new IllegalArgumentException("Device '" + deviceNumber + "' is not registered.")
+            responseObserver.onError(Status.NOT_FOUND
+                    .withDescription("Device '" + deviceNumber + "' is not registered.")
+                    .asRuntimeException()
             );
             return;
         }
@@ -214,8 +219,9 @@ public class SecurityService extends SecurityServiceImplBase {
 
                 // Check if the door exists and return an error if it doesn't
                 if (!doorLockedStates.containsKey(doorNumber)) {
-                    responseObserver.onError(
-                            new IllegalArgumentException("Door '" + doorNumber + "' does not exist.")
+                    responseObserver.onError(Status.NOT_FOUND
+                            .withDescription("Door '" + doorNumber + "' does not exist.")
+                            .asRuntimeException()
                     );
                     return;
                 }
@@ -261,8 +267,9 @@ public class SecurityService extends SecurityServiceImplBase {
 
                 // Check if the door exists and return an error if it doesn't
                 if (!doorLockedStates.containsKey(doorNumber)) {
-                    responseObserver.onError(
-                            new IllegalArgumentException("Door '" + doorNumber + "' does not exist.")
+                    responseObserver.onError(Status.NOT_FOUND
+                            .withDescription("Door '" + doorNumber + "' does not exist.")
+                            .asRuntimeException()
                     );
                     return;
                 }

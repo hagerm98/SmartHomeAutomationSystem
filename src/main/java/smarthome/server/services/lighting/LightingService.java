@@ -1,5 +1,6 @@
 package smarthome.server.services.lighting;
 
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import smarthome.generated.general.DeviceState;
 import smarthome.generated.general.OperationResponse;
@@ -19,8 +20,8 @@ public class LightingService extends LightingServiceImplBase {
             StreamObserver<LightingDeviceDetails> responseObserver
     ) {
         if (!lightingDetails.containsKey(request.getDeviceNumber())) {
-            responseObserver.onError(new Exception("No lighting device with the given number '"
-                    + request.getDeviceNumber() + "' exists."));
+            responseObserver.onError(Status.NOT_FOUND.withDescription("No lighting device with the given number '"
+                    + request.getDeviceNumber() + "' exists.").asRuntimeException());
         } else {
             LightingDeviceDetails oldLightingDeviceDetails = lightingDetails.get(request.getDeviceNumber());
 
@@ -41,8 +42,8 @@ public class LightingService extends LightingServiceImplBase {
             StreamObserver<LightingDeviceDetails> responseObserver
     ) {
         if (!lightingDetails.containsKey(request.getDeviceNumber())) {
-            responseObserver.onError(new Exception("No lighting device with the given number '"
-                    + request.getDeviceNumber() + "' exists."));
+            responseObserver.onError(Status.NOT_FOUND.withDescription("No lighting device with the given number '"
+                    + request.getDeviceNumber() + "' exists.").asRuntimeException());
         } else {
             LightingDeviceDetails oldLightingDeviceDetails = lightingDetails.get(request.getDeviceNumber());
 
@@ -87,7 +88,10 @@ public class LightingService extends LightingServiceImplBase {
 
             @Override
             public void onError(Throwable throwable) {
-                responseObserver.onError(new Exception("Server received Error from Client: " + throwable.getMessage()));
+                responseObserver.onError(Status.CANCELLED
+                        .withDescription("Server received Error from Client: " + throwable.getMessage())
+                        .asRuntimeException()
+                );
             }
 
             @Override
@@ -104,8 +108,10 @@ public class LightingService extends LightingServiceImplBase {
     ) {
 
         if (lightingDetails.containsKey(request.getDeviceNumber())) {
-            responseObserver.onError(new Exception("There's a lighting device with the same number '"
-                    + request.getDeviceNumber() + "' already exists."));
+            responseObserver.onError(
+                    Status.ALREADY_EXISTS.withDescription("There's a lighting device with the same number '"
+                            + request.getDeviceNumber() + "' already exists.").asRuntimeException()
+            );
         } else {
             LightingDeviceDetails lightingDeviceDetails = LightingDeviceDetails.newBuilder()
                     .setLightingDevice(request)
@@ -126,8 +132,8 @@ public class LightingService extends LightingServiceImplBase {
             StreamObserver<LightingDeviceDetails> responseObserver
     ) {
         if (!lightingDetails.containsKey(request.getDeviceNumber())) {
-            responseObserver.onError(new Exception("No lighting device with the given number '"
-                    + request.getDeviceNumber() + "' exists."));
+            responseObserver.onError(Status.NOT_FOUND.withDescription("No lighting device with the given number '"
+                    + request.getDeviceNumber() + "' exists.").asRuntimeException());
         } else {
             LightingDeviceDetails lightingDeviceDetails = lightingDetails.remove(request.getDeviceNumber());
 
@@ -144,8 +150,11 @@ public class LightingService extends LightingServiceImplBase {
             @Override
             public void onNext(LightingDevice lightingDevice) {
                 if (!lightingDetails.containsKey(lightingDevice.getDeviceNumber())) {
-                    responseObserver.onError(new Exception("No lighting device with the given number '"
-                            + lightingDevice.getDeviceNumber() + "' exists."));
+                    responseObserver.onError(Status.NOT_FOUND
+                            .withDescription("No lighting device with the given number '"
+                                    + lightingDevice.getDeviceNumber() + "' exists.")
+                            .asRuntimeException()
+                    );
                 } else {
                     LightingDeviceDetails oldLightingDeviceDetails = lightingDetails.get(lightingDevice.getDeviceNumber());
 

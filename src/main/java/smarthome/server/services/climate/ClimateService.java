@@ -1,5 +1,6 @@
 package smarthome.server.services.climate;
 
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import smarthome.generated.climate.*;
 import smarthome.generated.climate.ClimateServiceGrpc.ClimateServiceImplBase;
@@ -175,7 +176,10 @@ public class ClimateService extends ClimateServiceImplBase {
             StreamObserver<TemperatureReading> responseObserver
     ) {
         if (temperatureReadings.isEmpty()) {
-            responseObserver.onError(new Exception("No entries found for Temperature readings at the moment."));
+            responseObserver.onError(Status.NOT_FOUND
+                    .withDescription("No entries found for Temperature readings at the moment.")
+                    .asRuntimeException()
+            );
         } else {
             int numberOfHistoryEntries = Math.min(request.getMaxNoOfReadings(), temperatureReadings.size());
 
@@ -193,7 +197,10 @@ public class ClimateService extends ClimateServiceImplBase {
             StreamObserver<HumidityReading> responseObserver
     ) {
         if (humidityReadings.isEmpty()) {
-            responseObserver.onError(new Exception("No entries found for Humidity readings at the moment."));
+            responseObserver.onError(Status.NOT_FOUND
+                    .withDescription("No entries found for Humidity readings at the moment.")
+                    .asRuntimeException()
+            );
         } else {
             int numberOfHistoryEntries = Math.min(request.getMaxNoOfReadings(), humidityReadings.size());
 
