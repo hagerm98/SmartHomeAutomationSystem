@@ -11,70 +11,119 @@ import "SmartHomeGeneral.proto";
 // -------------------
 
 // Climate Service
+// This service manages the climate control system in our smart home.
+// It allows clients to set target climate settings, respond to temperature and humidity readings,
 service ClimateService {
+
+  /**
+   * This operation is used to set the target climate settings for the home.
+   * The client sends a TargetClimateSetting message containing the desired temperature and humidity levels.
+   * The server responds with an OperationResponse message indicating the success or failure of the operation.
+   */
   rpc setTargetClimateSettings(TargetClimateSetting) returns (General.OperationResponse) {}
+
+  /**
+   * These two operations are used to respond to temperature and humidity readings from the sensors.
+   * The client sends a TemperatureChangeEvent or HumidityChangeEvent message containing the current readings.
+   * The server responds with the updated ClimateDevicesState message.
+   * The server can also use this information to adjust the heating, AC, or humidifier/dehumidifier states.
+   * The server also keeps track of both readings history.
+   */
   rpc respondToHumidityReading(HumidityChangeEvent) returns (ClimateDevicesState) {}
   rpc respondToTemperatureReading(TemperatureChangeEvent) returns (ClimateDevicesState) {}
+
+  /**
+   * These operations are used to set the state of the heating, Air Conditioner, and humidifier/dehumidifier devices.
+   * The client sends a HeatingStateRequest, ACStateRequest, or HumidifierDehumidifierStateRequest message containing the desired state.
+   * The server responds with the updated ClimateDevicesState message.
+   */
   rpc setHeatingState(HeatingStateRequest) returns (ClimateDevicesState) {}
   rpc setACState(ACStateRequest) returns (ClimateDevicesState) {}
   rpc setHumidifierDehumidifierState(HumidifierDehumidifierStateRequest) returns (ClimateDevicesState) {}
+
+  /**
+   * This operation is used to get the current state of all climate devices.
+   * The client sends a ClimateDevicesStateRequest message.
+   * The server responds with the current ClimateDevicesState message.
+   */
   rpc getClimateDevicesState(ClimateDevicesStateRequest) returns (ClimateDevicesState) {}
+
+  /*
+   * These operations are used to get the history of temperature or humidity readings.
+   * The client sends a TemperatureHistoryRequest or HumidityHistoryRequest message containing the maximum number of readings to retrieve.
+   * The server responds with a stream of TemperatureReading or HumidityReading messages containing the historical data.
+   */
   rpc getTemperatureHistory(TemperatureHistoryRequest) returns (stream TemperatureReading) {}
   rpc getHumidityHistory(HumidityHistoryRequest) returns (stream HumidityReading) {}
 }
 
+// Message Definitions
+
+// TargetClimateSetting message is used to set the target climate settings for the home.
 message TargetClimateSetting {
   int32 targetTemperature = 1;
   int32 targetHumidity = 2;
 }
 
+// HumidityChangeEvent message is used to send to the server to respond to humidity readings from the sensors.
 message HumidityChangeEvent {
   int32 humidity = 1;
 }
 
+// TemperatureChangeEvent message is used to send to the server to respond to temperature readings from the sensors.
 message TemperatureChangeEvent {
   int32 temperature = 1;
 }
 
+// HeatingStateRequest message is used to set the heating state of a specific device.
 message HeatingStateRequest {
   General.DeviceState heatingState = 1;
 }
 
+// ACStateRequest message is used to set the Air Conditioner state of a specific device.
 message ACStateRequest {
   General.DeviceState acState = 1;
 }
 
+// HumidifierDehumidifierState message is used to set the state of the humidifier/dehumidifier device.
 enum HumidifierDehumidifierState {
   HUMIDIFIER = 0;
   DEHUMIDIFIER = 1;
   HUMIDIFIER_DEHUMIDIFIER_OFF = 2;
 }
 
+// HumidifierDehumidifierStateRequest message is used to set the state of the humidifier/dehumidifier device.
 message HumidifierDehumidifierStateRequest {
   HumidifierDehumidifierState state = 1;
 }
 
+// ClimateDevicesState message is used to represent the current state of all climate devices.
 message ClimateDevicesState {
   HumidifierDehumidifierState humidityDeviceState = 1;
   General.DeviceState acState = 2;
   General.DeviceState heatingState = 3;
 }
 
+// ClimateDevicesStateRequest message is used to request the current state of all climate devices.
 message ClimateDevicesStateRequest {}
 
+// TemperatureHistoryRequest message is used to request the history of temperature readings.
 message TemperatureHistoryRequest {
   int32 maxNoOfReadings = 1;
 }
 
+// HumidityHistoryRequest message is used to request the history of humidity readings.
 message HumidityHistoryRequest {
   int32 maxNoOfReadings = 1;
 }
 
+// TemperatureReading message is used to represent a single temperature reading.
 message TemperatureReading {
   string time = 1;
   int32 temperature = 2;
 }
 
+// HumidityReading message is used to represent a single humidity reading.
 message HumidityReading {
   string time = 1;
   int32 humidity = 2;

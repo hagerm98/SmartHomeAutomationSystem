@@ -80,7 +80,7 @@ public class SmartHomeClient {
 
     // Methods to interact with the lighting service
 
-    // Wrapper method to call lighting service: setLightingState
+    // UNARY - Wrapper method to call lighting service: setLightingState
     public LightingDeviceDetails setLightingState(int deviceNumber, DeviceState state) {
         logger.info("Setting lighting state {} for device number: {}", state, deviceNumber);
         return lightingServiceBlockingStub.withDeadlineAfter(2, TimeUnit.SECONDS).setLightingState(
@@ -91,7 +91,7 @@ public class SmartHomeClient {
         );
     }
 
-    // Wrapper method to call lighting service: setLightingBrightness
+    // UNARY - Wrapper method to call lighting service: setLightingBrightness
     public LightingDeviceDetails setLightingBrightness(int deviceNumber, int brightness) {
         logger.info("Setting lighting brightness {} for device number: {}", brightness, deviceNumber);
         return lightingServiceBlockingStub.withDeadlineAfter(2, TimeUnit.SECONDS).setLightingBrightness(
@@ -102,13 +102,13 @@ public class SmartHomeClient {
         );
     }
 
-    // Wrapper method to call lighting service: respondToMotionDetection
+    // Bi-Directional Streaming - Wrapper method to call lighting service: respondToMotionDetection
     public StreamObserver<MotionEvent> respondToMotionDetection(StreamObserver<LightingDeviceDetails> responseObserver) {
         logger.info("Setting up motion detection response observer");
         return lightingServiceStub.respondToMotionDetection(responseObserver);
     }
 
-    // Wrapper method to call lighting service: registerLightingDevice
+    // UNARY - Wrapper method to call lighting service: registerLightingDevice
     public LightingDeviceDetails registerLightingDevice(int deviceNumber, int roomNumber) {
         logger.info("Registering lighting device number: {} in room number: {}", deviceNumber, roomNumber);
         return lightingServiceBlockingStub.withDeadlineAfter(2, TimeUnit.SECONDS).registerLightingDevice(
@@ -119,7 +119,7 @@ public class SmartHomeClient {
         );
     }
 
-    // Wrapper method to call lighting service: deregisterLightingDevice
+    // UNARY - Wrapper method to call lighting service: deregisterLightingDevice
     public LightingDeviceDetails deregisterLightingDevice(int deviceNumber) {
         logger.info("Deregistering lighting device number: {}", deviceNumber);
         return lightingServiceBlockingStub.withDeadlineAfter(2, TimeUnit.SECONDS).deregisterLightingDevice(
@@ -129,7 +129,7 @@ public class SmartHomeClient {
         );
     }
 
-    // Wrapper method to call lighting service: turnOffLights
+    // Client Streaming - Wrapper method to call lighting service: turnOffLights
     public StreamObserver<LightingDevice> turnOffLights(StreamObserver<OperationResponse> responseObserver) {
         logger.info("Setting up turn off lights response observer");
         return lightingServiceStub.turnOffLights(
@@ -139,7 +139,7 @@ public class SmartHomeClient {
 
     // Methods to interact with the climate service
 
-    // Wrapper method to call climate service: setTargetClimateSettings
+    // UNARY - Wrapper method to call climate service: setTargetClimateSettings
     public OperationResponse setTargetClimateSettings(int targetTemperature, int targetHumidity) {
         logger.info("Setting target climate settings: temperature {} and humidity {}", targetTemperature, targetHumidity);
         return climateServiceBlockingStub.withDeadlineAfter(2, TimeUnit.SECONDS).setTargetClimateSettings(
@@ -150,7 +150,7 @@ public class SmartHomeClient {
         );
     }
 
-    // Wrapper method to call climate service: respondToHumidityReading
+    // UNARY - Wrapper method to call climate service: respondToHumidityReading
     public ClimateDevicesState respondToHumidityReading(int humidity) {
         logger.info("Sending to server humidity reading: {}", humidity);
         return climateServiceBlockingStub.withDeadlineAfter(2, TimeUnit.SECONDS).respondToHumidityReading(
@@ -160,7 +160,7 @@ public class SmartHomeClient {
         );
     }
 
-    // Wrapper method to call climate service: respondToTemperatureReading
+    // UNARY - Wrapper method to call climate service: respondToTemperatureReading
     public ClimateDevicesState respondToTemperatureReading(int temperature) {
         logger.info("Sending to server temperature reading: {}", temperature);
         return climateServiceBlockingStub.withDeadlineAfter(2, TimeUnit.SECONDS).respondToTemperatureReading(
@@ -170,7 +170,7 @@ public class SmartHomeClient {
         );
     }
 
-    // Wrapper method to call climate service: setHeatingState
+    // UNARY - Wrapper method to call climate service: setHeatingState
     public ClimateDevicesState setHeatingState(DeviceState state) {
         logger.info("Setting heating state: {}", state);
         return climateServiceBlockingStub.withDeadlineAfter(2, TimeUnit.SECONDS).setHeatingState(
@@ -180,7 +180,7 @@ public class SmartHomeClient {
         );
     }
 
-    // Wrapper method to call climate service: setACState
+    // UNARY - Wrapper method to call climate service: setACState
     public ClimateDevicesState setACState(DeviceState state) {
         logger.info("Setting AC state: {}", state);
         return climateServiceBlockingStub.withDeadlineAfter(2, TimeUnit.SECONDS).setACState(
@@ -190,7 +190,7 @@ public class SmartHomeClient {
         );
     }
 
-    // Wrapper method to call climate service: setHumidifierDehumidifierState
+    // UNARY - Wrapper method to call climate service: setHumidifierDehumidifierState
     public ClimateDevicesState setHumidifierDehumidifierState(HumidifierDehumidifierState state) {
         logger.info("Setting humidifier/dehumidifier state: {}", state);
         return climateServiceBlockingStub.withDeadlineAfter(2, TimeUnit.SECONDS).setHumidifierDehumidifierState(
@@ -200,7 +200,7 @@ public class SmartHomeClient {
         );
     }
 
-    // Wrapper method to call climate service: getClimateDevicesState
+    // UNARY - Wrapper method to call climate service: getClimateDevicesState
     public ClimateDevicesState getClimateDevicesState() {
         logger.info("Getting climate devices state");
         return climateServiceBlockingStub.withDeadlineAfter(2, TimeUnit.SECONDS).getClimateDevicesState(
@@ -208,7 +208,7 @@ public class SmartHomeClient {
         );
     }
 
-    // Wrapper method to call climate service: getTemperatureHistory (Sync)
+    // Server Streaming - Wrapper method to call climate service: getTemperatureHistory (Sync)
     public Iterator<TemperatureReading> getTemperatureHistory() {
         logger.info("Getting temperature history");
         return climateServiceBlockingStub.withDeadlineAfter(2, TimeUnit.SECONDS).getTemperatureHistory(
@@ -216,7 +216,7 @@ public class SmartHomeClient {
         );
     }
 
-    // Wrapper method to call climate service: getTemperatureHistory (Async)
+    // Server Streaming - Wrapper method to call climate service: getTemperatureHistory (Async)
     public void getTemperatureHistoryAsync(StreamObserver<TemperatureReading> responseObserver) {
         logger.info("Getting temperature history asynchronously");
         climateServiceStub.withDeadlineAfter(5, TimeUnit.SECONDS).getTemperatureHistory(
@@ -225,7 +225,7 @@ public class SmartHomeClient {
         );
     }
 
-    // Wrapper method to call climate service: getHumidityHistory
+    // Server Streaming - Wrapper method to call climate service: getHumidityHistory
     public Iterator<HumidityReading> getHumidityHistory() {
         logger.info("Getting humidity history");
         return climateServiceBlockingStub.withDeadlineAfter(2, TimeUnit.SECONDS).getHumidityHistory(
@@ -233,7 +233,7 @@ public class SmartHomeClient {
         );
     }
 
-    // Wrapper method to call climate service: getHumidityHistory (Async)
+    // Server Streaming - Wrapper method to call climate service: getHumidityHistory (Async)
     public void getHumidityHistoryAsync(StreamObserver<HumidityReading> responseObserver) {
         logger.info("Getting humidity history asynchronously");
         climateServiceStub.withDeadlineAfter(5, TimeUnit.SECONDS).getHumidityHistory(
@@ -244,7 +244,7 @@ public class SmartHomeClient {
 
     // Methods to interact with the security service
 
-    // Wrapper method to call security service: lockDoor
+    // UNARY - Wrapper method to call security service: lockDoor
     public OperationResponse lockDoor(int doorNumber) {
         logger.info("Locking door number: {}", doorNumber);
         return securityServiceBlockingStub.withDeadlineAfter(2, TimeUnit.SECONDS).lockDoor(
@@ -254,7 +254,7 @@ public class SmartHomeClient {
         );
     }
 
-    // Wrapper method to call security service: unlockDoor
+    // UNARY - Wrapper method to call security service: unlockDoor
     public OperationResponse unlockDoor(int doorNumber) {
         logger.info("Unlocking door number: {}", doorNumber);
         return securityServiceBlockingStub.withDeadlineAfter(2, TimeUnit.SECONDS).unlockDoor(
@@ -264,7 +264,7 @@ public class SmartHomeClient {
         );
     }
 
-    // Wrapper method to call security service: registerSecurityDevice
+    // UNARY - Wrapper method to call security service: registerSecurityDevice
     public OperationResponse registerSecurityDevice(int deviceNumber, SecurityDeviceType deviceType) {
         logger.info("Registering security device number: {} of type: {}", deviceNumber, deviceType);
         return securityServiceBlockingStub.withDeadlineAfter(2, TimeUnit.SECONDS).registerSecurityDevice(
@@ -275,7 +275,7 @@ public class SmartHomeClient {
         );
     }
 
-    // Wrapper method to call security service: deregisterSecurityDevice
+    // UNARY - Wrapper method to call security service: deregisterSecurityDevice
     public OperationResponse deregisterSecurityDevice(int deviceNumber) {
         logger.info("Deregistering security device number: {}", deviceNumber);
         return securityServiceBlockingStub.withDeadlineAfter(2, TimeUnit.SECONDS).deregisterSecurityDevice(
@@ -285,19 +285,19 @@ public class SmartHomeClient {
         );
     }
 
-    // Wrapper method to call security service: respondToSecurityEvent
+    // Server Streaming - Wrapper method to call security service: respondToSecurityEvent
     public void respondToSecurityEvent(SecurityEvent securityEvent, StreamObserver<SecurityEventAction> responseObserver) {
         logger.info("Responding to security event: {}", securityEvent);
         securityServiceStub.withDeadlineAfter(5, TimeUnit.SECONDS).respondToSecurityEvent(securityEvent, responseObserver);
     }
 
-    // Wrapper method to call security service: lockDoors
+    // Client Streaming - Wrapper method to call security service: lockDoors
     public StreamObserver<LockDoorRequest> lockDoors(StreamObserver<OperationResponse> responseObserver) {
         logger.info("Setting up lock doors response observer");
         return securityServiceStub.lockDoors(responseObserver);
     }
 
-    // Wrapper method to call security service: unlockDoors
+    // Client Streaming - Wrapper method to call security service: unlockDoors
     public StreamObserver<UnlockDoorRequest> unlockDoors(StreamObserver<OperationResponse> responseObserver) {
         logger.info("Setting up unlock doors response observer");
         return securityServiceStub.unlockDoors(responseObserver);

@@ -10,6 +10,7 @@ import java.io.IOException;
 
 public class SmartHomeServer {
     public static void main(String[] args) {
+        // Initialize the services
         LightingService lightingService = new LightingService();
         ClimateService climateService = new ClimateService();
         SecurityService securityService = new SecurityService();
@@ -17,6 +18,7 @@ public class SmartHomeServer {
         int port = 50051;
 
         try {
+            // Create and start the gRPC server
             Server server = ServerBuilder.forPort(port)
                     .addService(lightingService)
                     .addService(climateService)
@@ -34,6 +36,7 @@ public class SmartHomeServer {
                 server.shutdown();
 
                 try {
+                    // Wait for the server to terminate
                     if (!server.awaitTermination(30, java.util.concurrent.TimeUnit.SECONDS)) {
                         server.shutdownNow();
                     }

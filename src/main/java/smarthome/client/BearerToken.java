@@ -17,10 +17,14 @@ public class BearerToken implements CallCredentials {
         this.value = value;
     }
 
+    /**
+     * Applies the request metadata to the gRPC calls from the client stubs.
+     */
     @Override
     public void applyRequestMetadata(MethodDescriptor<?, ?> methodDescriptor, Attributes attributes, Executor executor, MetadataApplier metadataApplier) {
         executor.execute(() -> {
             try {
+                // Create a new Metadata object and add the authorization header
                 Metadata headers = new Metadata();
                 headers.put(AUTHORIZATION_METADATA_KEY, String.format("%s %s", BEARER_TYPE, value));
                 metadataApplier.apply(headers);

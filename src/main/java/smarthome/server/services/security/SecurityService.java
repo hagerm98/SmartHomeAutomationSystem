@@ -22,11 +22,15 @@ public class SecurityService extends SecurityServiceImplBase {
     List<Integer> requestedDoorNumbersLock = new ArrayList<>();
     List<Integer> requestedDoorNumbersUnlock = new ArrayList<>();
 
+    /**
+     * Lock a door given its door number.
+     */
     @Override
     public void lockDoor(
             LockDoorRequest request,
             StreamObserver<OperationResponse> responseObserver
     ) {
+        // Get the door number from the request
         int doorNumber = request.getDoorNumber();
 
         // Check if the door exists and return an error if it doesn't
@@ -52,11 +56,15 @@ public class SecurityService extends SecurityServiceImplBase {
         responseObserver.onCompleted();
     }
 
+    /**
+     * Unlock a door given its door number.
+     */
     @Override
     public void unlockDoor(
             UnlockDoorRequest request,
             StreamObserver<OperationResponse> responseObserver
     ) {
+        // Get the door number from the request
         int doorNumber = request.getDoorNumber();
 
         // Check if the door exists and return an error if it doesn't
@@ -82,11 +90,15 @@ public class SecurityService extends SecurityServiceImplBase {
         responseObserver.onCompleted();
     }
 
+    /**
+     * Register a new security device with the system.
+     */
     @Override
     public void registerSecurityDevice(
             SecurityDevice request,
             StreamObserver<OperationResponse> responseObserver
     ) {
+        // Get the device number from the request
         int deviceNumber = request.getDeviceNumber();
 
         // Check if the device is already registered
@@ -117,11 +129,15 @@ public class SecurityService extends SecurityServiceImplBase {
         responseObserver.onCompleted();
     }
 
+    /**
+     * Deregister a security device from the system.
+     */
     @Override
     public void deregisterSecurityDevice(
             SecurityDevice request,
             StreamObserver<OperationResponse> responseObserver
     ) {
+        // Get the device number from the request
         int deviceNumber = request.getDeviceNumber();
 
         // Check if the device is registered
@@ -152,11 +168,15 @@ public class SecurityService extends SecurityServiceImplBase {
         responseObserver.onCompleted();
     }
 
+    /**
+     * Respond to a security event based on the event type
+     */
     @Override
     public void respondToSecurityEvent(
             SecurityEvent request,
             StreamObserver<SecurityEventAction> responseObserver
     ) {
+        // Get the event type and timestamp from the request
         SecurityEventType eventType = request.getEventType();
         long timestamp = request.getTimestamp();
 
@@ -210,9 +230,13 @@ public class SecurityService extends SecurityServiceImplBase {
                 break;
         }
 
+        // Complete the response ending the open stream after sending all actions
         responseObserver.onCompleted();
     }
 
+    /**
+     * Lock multiple doors given their door numbers
+     */
     @Override
     public StreamObserver<LockDoorRequest> lockDoors(
             StreamObserver<OperationResponse> responseObserver
@@ -220,6 +244,7 @@ public class SecurityService extends SecurityServiceImplBase {
         return new StreamObserver<LockDoorRequest>() {
             @Override
             public void onNext(LockDoorRequest request) {
+                // Get the door number from the request
                 int doorNumber = request.getDoorNumber();
 
                 // Check if the door exists and return an error if it doesn't
@@ -240,12 +265,14 @@ public class SecurityService extends SecurityServiceImplBase {
 
             @Override
             public void onError(Throwable t) {
+                // Handle the error and send a response
                 OperationResponse operationResponse = OperationResponse.newBuilder()
                         .setIsSuccessful(false)
                         .setOperationName("lockDoors")
                         .setMessage("Received Client Error: " + t.getMessage())
                         .build();
 
+                // Send the error response back to the client
                 responseObserver.onNext(operationResponse);
                 responseObserver.onCompleted();
 
@@ -254,20 +281,26 @@ public class SecurityService extends SecurityServiceImplBase {
 
             @Override
             public void onCompleted() {
+                // Send a response indicating all requested doors have been locked
                 OperationResponse operationResponse = OperationResponse.newBuilder()
                         .setIsSuccessful(true)
                         .setOperationName("lockDoors")
                         .setMessage("All requested doors " + requestedDoorNumbersLock + " have been locked.")
                         .build();
-                
+
+                // Send the response back to the client
                 responseObserver.onNext(operationResponse);
                 responseObserver.onCompleted();
 
+                // Clear the list of requested doors
                 requestedDoorNumbersLock.clear();
             }
         };
     }
 
+    /**
+     * Unlock multiple doors given their door numbers
+     */
     @Override
     public StreamObserver<UnlockDoorRequest> unlockDoors(
             StreamObserver<OperationResponse> responseObserver
@@ -275,6 +308,7 @@ public class SecurityService extends SecurityServiceImplBase {
         return new StreamObserver<UnlockDoorRequest>() {
             @Override
             public void onNext(UnlockDoorRequest request) {
+                // Get the door number from the request
                 int doorNumber = request.getDoorNumber();
 
                 // Check if the door exists and return an error if it doesn't
@@ -295,29 +329,35 @@ public class SecurityService extends SecurityServiceImplBase {
 
             @Override
             public void onError(Throwable t) {
+                // Handle the error and send a response
                 OperationResponse operationResponse = OperationResponse.newBuilder()
                         .setIsSuccessful(false)
                         .setOperationName("unlockDoors")
                         .setMessage("Received Client Error: " + t.getMessage())
                         .build();
 
+                // Send the error response back to the client
                 responseObserver.onNext(operationResponse);
                 responseObserver.onCompleted();
 
+                // Clear the list of requested doors
                 requestedDoorNumbersUnlock.clear();
             }
 
             @Override
             public void onCompleted() {
+                // Send a response indicating all requested doors have been unlocked
                 OperationResponse operationResponse = OperationResponse.newBuilder()
                         .setIsSuccessful(true)
                         .setOperationName("unlockDoors")
                         .setMessage("All requested doors " + requestedDoorNumbersUnlock + " have been unlocked.")
                         .build();
-                
+
+                // Send the response back to the client
                 responseObserver.onNext(operationResponse);
                 responseObserver.onCompleted();
 
+                // Clear the list of requested doors
                 requestedDoorNumbersUnlock.clear();
             }
         };

@@ -18,16 +18,21 @@ public class AuthorizationServerInterceptor implements ServerInterceptor {
 
     private final JwtParser parser = Jwts.parser().setSigningKey(JWT_SIGNING_KEY);
 
+    /**
+     * Intercepts the all calls incoming to any of the server services and checks the authorization token.
+     */
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> serverCall, Metadata metadata, ServerCallHandler<ReqT, RespT> serverCallHandler) {
         String value = metadata.get(AUTHORIZATION_METADATA_KEY);
 
+        // Check the authorization token
         Status status;
         if (value == null) {
             status = Status.UNAUTHENTICATED.withDescription("Authorization token is missing");
         } else if (!value.startsWith(BEARER_TYPE)) {
             status = Status.UNAUTHENTICATED.withDescription("Unknown authorization type");
         } else {
+            // Parse the JWT token
             try {
                 String token = value.substring(BEARER_TYPE.length()).trim();
                 Jws<Claims> claims = parser.parseClaimsJws(token);
@@ -38,6 +43,7 @@ public class AuthorizationServerInterceptor implements ServerInterceptor {
             }
         }
 
+        // If the token is invalid, close the call with an error status
         serverCall.close(status, metadata);
         return new ServerCall.Listener<ReqT>() {};
     }

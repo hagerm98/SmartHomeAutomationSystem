@@ -11,16 +11,49 @@ import "SmartHomeGeneral.proto";
 // ---------------------
 
 // Security Service
+// This service manages the security system in our smart home.
+// It allows clients to lock and unlock doors, register and deregister security devices,
+// respond to security events, and perform actions based on those events.
 service SecurityService {
+
+  /**
+   * Both these operations are used to lock or unlock a specific door.
+   * The client sends a LockDoorRequest or UnlockDoorRequest message containing the door number.
+   * The server responds with an OperationResponse message indicating the success or failure of the operation.
+   */
   rpc lockDoor(LockDoorRequest) returns (General.OperationResponse) {}
   rpc unlockDoor(UnlockDoorRequest) returns (General.OperationResponse) {}
+
+  /**
+   * These operations are used to register or deregister a security device.
+   * The client sends a SecurityDevice message containing the device number and type.
+   * The server responds with an OperationResponse message indicating the success or failure of the operation.
+   * The device number is used to identify the device in the system.
+   * The device type is used to determine the type of security device (e.g., camera, alarm, door, etc.).
+   */
   rpc registerSecurityDevice(SecurityDevice) returns (General.OperationResponse) {}
   rpc deregisterSecurityDevice(SecurityDevice) returns (General.OperationResponse) {}
+
+  /**
+   * This operation is used to ask the server to respond to security events.
+   * The client sends a SecurityEvent message containing the device number, event type, and timestamp.
+   * The server responds with a stream of SecurityEventAction messages containing the actions taken in response to the event.
+   * The event type is used to determine the type of security event (e.g., fire detected, break-in detected, etc.).
+   */
   rpc respondToSecurityEvent(SecurityEvent) returns (stream SecurityEventAction) {}
+
+  /**
+   * These operations are used to lock or unlock multiple doors sequentially in a stream.
+   * The client sends a stream of LockDoorRequest or UnlockDoorRequest messages containing the door numbers.
+   * The server responds with an OperationResponse message indicating the success or failure of the operation.
+   */
   rpc lockDoors(stream LockDoorRequest) returns (General.OperationResponse) {}
   rpc unlockDoors(stream UnlockDoorRequest) returns (General.OperationResponse) {}
 }
 
+// Message Definitions
+
+// The LockDoorRequest and UnlockDoorRequest messages contain the door number to be locked or unlocked.
 message LockDoorRequest {
   int32 doorNumber = 1;
 }
@@ -29,6 +62,7 @@ message UnlockDoorRequest {
   int32 doorNumber = 1;
 }
 
+// The SecurityDeviceType enum defines the types of security devices that can be registered.
 enum SecurityDeviceType {
   CAMERA = 0;
   ALARM = 1;
@@ -37,11 +71,13 @@ enum SecurityDeviceType {
   BREAK_IN_DETECTOR = 4;
 }
 
+// The SecurityDevice message contains the device number and type of the security device.
 message SecurityDevice {
   int32 deviceNumber = 2;
   SecurityDeviceType deviceType = 3;
 }
 
+// The SecurityEventType enum defines the types of security events that can be detected.
 enum SecurityEventType {
   NO_EVENT = 0;
   FIRE_DETECTED = 1;
@@ -50,12 +86,14 @@ enum SecurityEventType {
   DOORBELL_RING = 4;
 }
 
+// The SecurityEvent message contains the device number, event type, and timestamp of the security event.
 message SecurityEvent {
   int32 deviceNumber = 1;
   SecurityEventType eventType = 2;
   uint64 timestamp = 3;
 }
 
+// The SecurityAction enum defines the actions that can be taken in response to a security event.
 enum SecurityAction {
   NO_ACTION = 0;
   ACTIVATE_ALARM = 1;
@@ -64,6 +102,7 @@ enum SecurityAction {
   LOCK_DOORS = 4;
 }
 
+// The SecurityEventAction message contains the timestamp and action taken in response to a security event.
 message SecurityEventAction {
   uint64 timestamp = 1;
   SecurityAction action = 2;

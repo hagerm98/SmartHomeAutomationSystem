@@ -5,12 +5,17 @@ option java_package = "smarthome.generated.general";
 
 package General;
 
-// Enums
+// Smart Home General
+// This file contains common messages and enums used across various services in the smart home system.
+
+
+// DeviceState enum is used to represent the state of a device.
 enum DeviceState {
   OFF = 0;
   ON = 1;
 }
 
+// OperationResponse message is used to indicate the success or failure of an operation.
 message OperationResponse {
   string operationName = 1;
   bool isSuccessful = 2;

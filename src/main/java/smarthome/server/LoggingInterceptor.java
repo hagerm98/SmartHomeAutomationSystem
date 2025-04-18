@@ -8,6 +8,9 @@ public class LoggingInterceptor implements ServerInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggingInterceptor.class);
 
+    /**
+     * Intercepts the all calls incoming to any of the server services and logs the request and response.
+     */
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
             ServerCall<ReqT, RespT> call,
@@ -17,6 +20,7 @@ public class LoggingInterceptor implements ServerInterceptor {
         logger.info("Method: {}", call.getMethodDescriptor().getFullMethodName());
         logger.info("Headers: {}", headers);
 
+        // Log the request and its parameters
         return new ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(
                 next.startCall(call, headers)
         ) {

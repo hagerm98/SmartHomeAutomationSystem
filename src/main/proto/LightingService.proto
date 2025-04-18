@@ -11,35 +11,81 @@ import "SmartHomeGeneral.proto";
 // -------------
 
 // Lighting Service
+// This service manages the lighting system in our smart home.
+// It allows clients to control the lighting state, brightness, and respond to motion detection events.
 service LightingService {
+
+  /**
+   * This operation is used to set the lighting state of a specific device.
+   * The client sends a LightingStateRequest message containing the device number and desired state.
+   * Lighting state can be ON or OFF.
+   * The server responds with the updated LightingDeviceDetails message.
+   */
   rpc setLightingState(LightingStateRequest) returns (LightingDeviceDetails) {}
+
+  /**
+   * This operation is used to set the brightness of a specific lighting device.
+   * The client sends a LightingBrightnessRequest message containing the device number and desired brightness level.
+   * The server responds with the updated LightingDeviceDetails message.
+   */
   rpc setLightingBrightness(LightingBrightnessRequest) returns (LightingDeviceDetails) {}
+
+  /**
+   * This operation is used to request from the server to react to motion sensor events.
+   * The client sends a stream of MotionEvent messages containing the room number and motion state.
+   * The server responds with a stream of LightingDeviceDetails messages containing the updated state of the lighting devices.
+   */
   rpc respondToMotionDetection(stream MotionEvent) returns (stream LightingDeviceDetails) {}
+
+  /**
+   * This operation is used to register a new lighting device.
+   * The client sends a LightingDevice message containing the room number and device number.
+   * The server responds with the registered LightingDeviceDetails message.
+   */
   rpc registerLightingDevice(LightingDevice) returns (LightingDeviceDetails) {}
+
+  /**
+   * This operation is used to deregister a lighting device.
+   * The client sends a LightingDevice message containing the device number.
+   * The server responds with the deregistered LightingDeviceDetails message.
+   */
   rpc deregisterLightingDevice(LightingDevice) returns (LightingDeviceDetails) {}
+
+  /**
+   * This operation is used to turn Off the lights that are given sequentially in a stream.
+   * The client sends a stream of LightingDevice messages containing the device numbers.
+   * The server responds at the end with an OperationResponse message indicating the success or failure of the operation.
+   */
   rpc turnOffLights(stream LightingDevice) returns (General.OperationResponse) {}
 }
 
+// Message Definitions
+
+// LightingStateRequest message is used to set the lighting state of a specific device.
 message LightingStateRequest {
   int32 deviceNumber = 1;
   General.DeviceState lightingState = 2;
 }
 
+// LightingBrightnessRequest message is used to set the brightness of a specific lighting device.
 message LightingBrightnessRequest {
   int32 deviceNumber = 1;
   float brightness = 2;
 }
 
+// MotionEvent message is used to report motion detection events.
 message MotionEvent {
   int32 roomNumber = 1;
   bool motionState = 2;
 }
 
+// LightingDevice message is used to identify a lighting device.
 message LightingDevice {
   int32 roomNumber = 1;
   int32 deviceNumber = 2;
 }
 
+// LightingDeviceDetails message contains details about a lighting device (including its state and brightness).
 message LightingDeviceDetails {
   LightingDevice lightingDevice = 1;
   General.DeviceState lightingDeviceState = 2;
