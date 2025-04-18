@@ -7,12 +7,16 @@ import smarthome.generated.general.OperationResponse;
 import smarthome.generated.lighting.*;
 import smarthome.generated.lighting.LightingServiceGrpc.LightingServiceImplBase;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class LightingService extends LightingServiceImplBase {
 
     Map<Integer, LightingDeviceDetails> lightingDetails = new HashMap<>();
+
+    List<Integer> turnedOffLights = new ArrayList<>();
 
     @Override
     public void setLightingState(
@@ -163,6 +167,8 @@ public class LightingService extends LightingServiceImplBase {
                             .build();
 
                     lightingDetails.put(lightingDevice.getDeviceNumber(), lightingDeviceDetails);
+
+                    turnedOffLights.add(lightingDevice.getDeviceNumber());
                 }
             }
 
@@ -183,11 +189,14 @@ public class LightingService extends LightingServiceImplBase {
                 OperationResponse operationResponse = OperationResponse.newBuilder()
                         .setIsSuccessful(true)
                         .setOperationName("turnOffLights")
-                        .setMessage("All given lights are turned off successfully")
+                        .setMessage("All given lights " + turnedOffLights + " are turned off successfully")
                         .build();
 
                 responseObserver.onNext(operationResponse);
                 responseObserver.onCompleted();
+
+                // Clear the list of turned off lights after sending the response
+                turnedOffLights.clear();
             }
         };
     }

@@ -5,7 +5,10 @@
 package smarthome.client;
 
 import io.grpc.stub.StreamObserver;
+import smarthome.generated.general.DeviceState;
+import smarthome.generated.general.OperationResponse;
 import smarthome.generated.lighting.LightingDevice;
+import smarthome.generated.lighting.LightingDeviceDetails;
 import smarthome.generated.lighting.MotionEvent;
 import smarthome.generated.security.LockDoorRequest;
 import smarthome.generated.security.UnlockDoorRequest;
@@ -76,7 +79,7 @@ public class SmartHomeGUI extends javax.swing.JFrame {
         setLightingStateRadioButtonOn = new javax.swing.JRadioButton();
         setLightingStateRadioButtonOff = new javax.swing.JRadioButton();
         setLightingDeviceStateButton = new javax.swing.JButton();
-        setLightingDeviceStateButton1 = new javax.swing.JButton();
+        setLightingDeviceBrightnessButton = new javax.swing.JButton();
         jLabel15 = new javax.swing.JLabel();
         respondToMotionSensorRoomNumberText = new javax.swing.JTextField();
         jLabel16 = new javax.swing.JLabel();
@@ -92,7 +95,7 @@ public class SmartHomeGUI extends javax.swing.JFrame {
         turnOffLightsCloseClientStreamButton = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        resultClimateTextArea = new javax.swing.JTextArea();
         jLabel18 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel19 = new javax.swing.JLabel();
@@ -141,7 +144,7 @@ public class SmartHomeGUI extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jLabel32 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTextArea2 = new javax.swing.JTextArea();
+        resultSecurityTextArea = new javax.swing.JTextArea();
         jPanel7 = new javax.swing.JPanel();
         jLabel33 = new javax.swing.JLabel();
         jLabel34 = new javax.swing.JLabel();
@@ -251,21 +254,15 @@ public class SmartHomeGUI extends javax.swing.JFrame {
             }
         });
 
-        setLightingDeviceStateButton1.setBackground(new java.awt.Color(153, 153, 255));
-        setLightingDeviceStateButton1.setText("Set Brightness");
-        setLightingDeviceStateButton1.addActionListener(new java.awt.event.ActionListener() {
+        setLightingDeviceBrightnessButton.setBackground(new java.awt.Color(153, 153, 255));
+        setLightingDeviceBrightnessButton.setText("Set Brightness");
+        setLightingDeviceBrightnessButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                setLightingDeviceStateButton1ActionPerformed(evt);
+                setLightingDeviceBrightnessButtonActionPerformed(evt);
             }
         });
 
         jLabel15.setText("Room Number:");
-
-        respondToMotionSensorRoomNumberText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                respondToMotionSensorRoomNumberTextActionPerformed(evt);
-            }
-        });
 
         jLabel16.setText("Motion State:");
 
@@ -368,7 +365,7 @@ public class SmartHomeGUI extends javax.swing.JFrame {
                                 .addGap(29, 29, 29)
                                 .addComponent(setLightingBrightnessDeviceNumberText, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
-                        .addComponent(setLightingDeviceStateButton1)
+                        .addComponent(setLightingDeviceBrightnessButton)
                         .addGap(38, 38, 38))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -496,7 +493,7 @@ public class SmartHomeGUI extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(setLightingDeviceStateButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(setLightingDeviceBrightnessButton, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(28, 28, 28)))
                         .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -545,10 +542,10 @@ public class SmartHomeGUI extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Lighting Service", jPanel1);
 
-        jTextArea1.setEditable(false);
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
+        resultClimateTextArea.setEditable(false);
+        resultClimateTextArea.setColumns(20);
+        resultClimateTextArea.setRows(5);
+        jScrollPane2.setViewportView(resultClimateTextArea);
 
         jLabel18.setText("Results:");
 
@@ -952,10 +949,10 @@ public class SmartHomeGUI extends javax.swing.JFrame {
 
         jLabel32.setText("Results:");
 
-        jTextArea2.setEditable(false);
-        jTextArea2.setColumns(20);
-        jTextArea2.setRows(5);
-        jScrollPane3.setViewportView(jTextArea2);
+        resultSecurityTextArea.setEditable(false);
+        resultSecurityTextArea.setColumns(20);
+        resultSecurityTextArea.setRows(5);
+        jScrollPane3.setViewportView(resultSecurityTextArea);
 
         jLabel33.setText("Lock Door:");
 
@@ -1348,47 +1345,177 @@ public class SmartHomeGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void respondToMotionSensorSendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_respondToMotionSensorSendButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            int roomNumber = Integer.parseInt(respondToMotionSensorRoomNumberText.getText());
+            boolean motionDetected;
+            if (respondToMotionSensorRadioButtonYes.isSelected()) {
+                motionDetected = true;
+            } else if (respondToMotionSensorRadioButtonNo.isSelected()) {
+                motionDetected = false;
+            } else {
+                throw new IllegalArgumentException("No motion state Yes/No selected, please select the detected motion state");
+            }
+
+            this.motionEventsRequestObserver.onNext(MotionEvent.newBuilder()
+                    .setRoomNumber(roomNumber)
+                    .setMotionState(motionDetected)
+                    .build());
+
+            resultLightingTextArea.append("Sent Motion Sensor input '" + motionDetected + "' for room: " + roomNumber + "\n");
+        } catch (Exception e) {
+            resultLightingTextArea.append("Error sending motion sensor input due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_respondToMotionSensorSendButtonActionPerformed
 
     private void turnOffLightsSendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_turnOffLightsSendButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            int deviceNumber = Integer.parseInt(turnOffLightsDeviceNumberText.getText());
+
+            this.turnOffLightsRequestObserver.onNext(LightingDevice.newBuilder()
+                    .setDeviceNumber(deviceNumber)
+                    .build());
+
+            resultLightingTextArea.append("Sent Turn Off Lights request for device: " + deviceNumber + "\n");
+        } catch (Exception e) {
+            resultLightingTextArea.append("Error sending turn off lights request due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_turnOffLightsSendButtonActionPerformed
 
-    private void respondToMotionSensorRoomNumberTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_respondToMotionSensorRoomNumberTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_respondToMotionSensorRoomNumberTextActionPerformed
-
     private void registerLightingDeviceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerLightingDeviceButtonActionPerformed
-        // TODO add your handling code here:
+
+        try {
+            int deviceNumber = Integer.parseInt(registerLightingDeviceNumberText.getText());
+            int roomNumber = Integer.parseInt(registerLightingRoomNumberText.getText());
+
+            LightingDeviceDetails lightingDeviceDetails = smartHomeClient.registerLightingDevice(deviceNumber, roomNumber);
+
+            resultLightingTextArea.append("Successfully Registered Lighting Device: "
+                    + lightingDeviceDetails.toString().replace("\n", "")
+                    + "\n");
+        } catch (Exception e) {
+            resultLightingTextArea.append("Error registering lighting device due to: " + e.getMessage() + "\n");
+        }
+
     }//GEN-LAST:event_registerLightingDeviceButtonActionPerformed
 
     private void setLightingDeviceStateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setLightingDeviceStateButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            int deviceNumber = Integer.parseInt(setLightingStateDeviceNumberText.getText());
+            DeviceState deviceState;
+            if (setLightingStateRadioButtonOn.isSelected()) {
+                deviceState = DeviceState.ON;
+            } else if (setLightingStateRadioButtonOff.isSelected()) {
+                deviceState = DeviceState.OFF;
+            } else {
+                throw new IllegalArgumentException("No lighting state On/Off selected, please select the desired lighting state");
+            }
+
+            LightingDeviceDetails lightingDeviceDetails = smartHomeClient.setLightingState(deviceNumber, deviceState);
+
+            resultLightingTextArea.append("Successfully Set Lighting Device '"
+                    + lightingDeviceDetails.getLightingDevice().getDeviceNumber()
+                    + "' State to: " + deviceState + "\n");
+        } catch (Exception e) {
+            resultLightingTextArea.append("Error setting lighting device state for device '"
+                    + setLightingStateDeviceNumberText.getText() + "' due to : "
+                    + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_setLightingDeviceStateButtonActionPerformed
 
     private void deregisterLightingDeviceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deregisterLightingDeviceButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            int deviceNumber = Integer.parseInt(deregisterLightingDeviceNumberText.getText());
+
+            LightingDeviceDetails lightingDeviceDetails = smartHomeClient.deregisterLightingDevice(deviceNumber);
+
+            resultLightingTextArea.append("Successfully Deregistered Lighting Device: "
+                    + lightingDeviceDetails.toString().replace("\n", "")
+                    + "\n");
+        } catch (Exception e) {
+            resultLightingTextArea.append("Error deregistering lighting device due to: " + e.getMessage() + "\n");
+        }
     }//GEN-LAST:event_deregisterLightingDeviceButtonActionPerformed
 
-    private void setLightingDeviceStateButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setLightingDeviceStateButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_setLightingDeviceStateButton1ActionPerformed
+    private void setLightingDeviceBrightnessButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setLightingDeviceBrightnessButtonActionPerformed
+        try {
+            int deviceNumber = Integer.parseInt(setLightingBrightnessDeviceNumberText.getText());
+            int brightness = Integer.parseInt(setLightingBrightnessDeviceBrightnessText.getText());
+
+            LightingDeviceDetails lightingDeviceDetails = smartHomeClient.setLightingBrightness(deviceNumber, brightness);
+
+            resultLightingTextArea.append("Successfully Set Lighting Device '"
+                    + lightingDeviceDetails.getLightingDevice().getDeviceNumber()
+                    + "' Brightness to: " + brightness + "\n");
+        } catch (Exception e) {
+            resultLightingTextArea.append("Error setting lighting device brightness for device '"
+                    + setLightingBrightnessDeviceNumberText.getText() + "' due to : "
+                    + e.getMessage() + "\n");
+        }
+    }//GEN-LAST:event_setLightingDeviceBrightnessButtonActionPerformed
 
     private void respondToMotionSensorOpenBiStreamButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_respondToMotionSensorOpenBiStreamButtonActionPerformed
-        // TODO add your handling code here:
+        this.motionEventsRequestObserver = smartHomeClient.respondToMotionDetection(new StreamObserver<LightingDeviceDetails>() {
+            @Override
+            public void onNext(LightingDeviceDetails lightingDeviceDetails) {
+                if (lightingDeviceDetails.getLightingDeviceState() == DeviceState.ON) {
+                    resultLightingTextArea.append("Motion Sensor Turned on light device: (device:"
+                            + lightingDeviceDetails.getLightingDevice().getDeviceNumber()
+                            + ", room=" + lightingDeviceDetails.getLightingDevice().getRoomNumber() + ") \n");
+                } else {
+                    resultLightingTextArea.append("Motion Sensor Turned off light device: (device:"
+                            + lightingDeviceDetails.getLightingDevice().getDeviceNumber()
+                            + ", room=" + lightingDeviceDetails.getLightingDevice().getRoomNumber() + ") \n");
+                }
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                resultLightingTextArea.append("Error in Motion Sensor stream: " + t.getMessage() + "\n");
+            }
+
+            @Override
+            public void onCompleted() {
+                resultLightingTextArea.append("Motion Sensor stream completed.\n");
+            }
+        });
+        resultLightingTextArea.append("Motion Sensor bi-stream opened.\n");
     }//GEN-LAST:event_respondToMotionSensorOpenBiStreamButtonActionPerformed
 
     private void respondToMotionSensorCloseBiStreamButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_respondToMotionSensorCloseBiStreamButtonActionPerformed
-        // TODO add your handling code here:
+        if (this.motionEventsRequestObserver != null) {
+            this.motionEventsRequestObserver.onCompleted();
+            this.motionEventsRequestObserver = null;
+        }
+        resultLightingTextArea.append("Motion Sensor stream closed.\n");
     }//GEN-LAST:event_respondToMotionSensorCloseBiStreamButtonActionPerformed
 
     private void turnOffLightsOpenClientStreamButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_turnOffLightsOpenClientStreamButtonActionPerformed
-        // TODO add your handling code here:
+        this.turnOffLightsRequestObserver = smartHomeClient.turnOffLights(new StreamObserver<OperationResponse>() {
+            @Override
+            public void onNext(OperationResponse operationResponse) {
+                resultLightingTextArea.append("Turn Off Lights Response: "
+                        + operationResponse.toString().replace("\n", "") + "\n");
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                resultLightingTextArea.append("Error in Turn Off Lights stream: " + t.getMessage() + "\n");
+            }
+
+            @Override
+            public void onCompleted() {
+                resultLightingTextArea.append("Turn Off Lights stream completed.\n");
+            }
+        });
+        resultLightingTextArea.append("Turn Off Lights client stream opened.\n");
     }//GEN-LAST:event_turnOffLightsOpenClientStreamButtonActionPerformed
 
     private void turnOffLightsCloseClientStreamButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_turnOffLightsCloseClientStreamButtonActionPerformed
-        // TODO add your handling code here:
+        if (this.turnOffLightsRequestObserver != null) {
+            this.turnOffLightsRequestObserver.onCompleted();
+            this.turnOffLightsRequestObserver = null;
+        }
+        resultLightingTextArea.append("Turn Off Lights stream closed.\n");
     }//GEN-LAST:event_turnOffLightsCloseClientStreamButtonActionPerformed
 
     private void setTargetClimateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setTargetClimateButtonActionPerformed
@@ -1598,8 +1725,8 @@ public class SmartHomeGUI extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator8;
     private javax.swing.JSeparator jSeparator9;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextArea jTextArea2;
+    private javax.swing.JTextArea resultClimateTextArea;
+    private javax.swing.JTextArea resultSecurityTextArea;
     private javax.swing.JButton lockDoorButton;
     private javax.swing.JTextField lockDoorDoorNumberText;
     private javax.swing.JButton lockDoorsCloseClientStreamButton;
@@ -1643,7 +1770,7 @@ public class SmartHomeGUI extends javax.swing.JFrame {
     private javax.swing.JTextField setLightingBrightnessDeviceBrightnessText;
     private javax.swing.JTextField setLightingBrightnessDeviceNumberText;
     private javax.swing.JButton setLightingDeviceStateButton;
-    private javax.swing.JButton setLightingDeviceStateButton1;
+    private javax.swing.JButton setLightingDeviceBrightnessButton;
     private javax.swing.JTextField setLightingStateDeviceNumberText;
     private javax.swing.ButtonGroup setLightingStateDeviceState;
     private javax.swing.JRadioButton setLightingStateRadioButtonOff;
