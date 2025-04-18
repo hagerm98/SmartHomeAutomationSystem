@@ -1535,7 +1535,7 @@
                         <StringItem index="0" value="CAMERA"/>
                         <StringItem index="1" value="ALARM"/>
                         <StringItem index="2" value="DOOR"/>
-                        <StringItem index="3" value="MOTION_ACTION_DETECTOR "/>
+                        <StringItem index="3" value="MOTION_ACTION_DETECTOR"/>
                         <StringItem index="4" value="BREAK_IN_DETECTOR"/>
                       </StringArray>
                     </Property>

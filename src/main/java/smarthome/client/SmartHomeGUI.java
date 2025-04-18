@@ -1002,7 +1002,7 @@ public class SmartHomeGUI extends javax.swing.JFrame {
 
         jLabel39.setText("Device Type:");
 
-        registerSecurityDeviceDeviceTypeCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "CAMERA", "ALARM", "DOOR", "MOTION_ACTION_DETECTOR ", "BREAK_IN_DETECTOR" }));
+        registerSecurityDeviceDeviceTypeCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "CAMERA", "ALARM", "DOOR", "MOTION_ACTION_DETECTOR", "BREAK_IN_DETECTOR" }));
 
         jLabel40.setText("Deregister Security Device:");
 
